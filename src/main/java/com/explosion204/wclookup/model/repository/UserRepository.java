@@ -3,6 +3,9 @@ package com.explosion204.wclookup.model.repository;
 import com.explosion204.wclookup.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByGoogleId(String googleId);
+    Optional<User> findByRefreshToken(String refreshToken);
 }

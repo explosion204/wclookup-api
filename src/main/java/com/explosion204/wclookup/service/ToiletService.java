@@ -8,7 +8,6 @@ import com.explosion204.wclookup.service.pagination.PaginationModel;
 import com.explosion204.wclookup.service.validation.DtoValidation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +18,7 @@ public class ToiletService {
         this.toiletRepository = toiletRepository;
     }
 
-    public PaginationModel<ToiletDto> findAll(@PageableDefault Pageable pageable) {
+    public PaginationModel<ToiletDto> findAll(Pageable pageable) {
         Page<ToiletDto> page = toiletRepository.findAll(pageable)
                 .map(ToiletDto::fromToilet);
         return PaginationModel.fromPage(page);
