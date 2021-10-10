@@ -3,6 +3,7 @@ package com.explosion204.wclookup.model.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -10,7 +11,7 @@ import javax.persistence.*;
 public class Toilet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String address;
     private String schedule;
@@ -18,4 +19,7 @@ public class Toilet {
     private double longitude;
     private double rating;
     private boolean isConfirmed;
+
+    @OneToMany(mappedBy = "toilet")
+    private List<Review> reviews;
 }
