@@ -11,11 +11,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import lombok.SneakyThrows;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,20 +30,15 @@ import static java.time.ZoneOffset.UTC;
 public class AuthService {
     private static final String USER_ID_CLAIM = "user_id";
 
-    @Value("${google.oauth.client_id}")
-    private String clientId;
-
     @Value("${refresh.validity_time}")
     private int refreshValidityTime;
 
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
-    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, TokenUtil tokenUtil, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, TokenUtil tokenUtil) {
         this.userRepository = userRepository;
         this.tokenUtil = tokenUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -59,8 +54,13 @@ public class AuthService {
     }
 
     public AuthDto refresh(String refreshToken) {
-        User user = userRepository.findByRefreshToken(passwordEncoder.encode(refreshToken))
-                .orElseThrow(() -> new CredentialsExpiredException(StringUtils.EMPTY));
+        User user = userRepository.findByRefreshToken(DigestUtils.sha256Hex(refreshToken))
+                .orElseThrow(() -> new BadCredentialsException(StringUtils.EMPTY));
+        LocalDateTime expirationTime = user.getRefreshTokenExpiration();
+
+        if (expirationTime.isAfter(expirationTime.plusDays(refreshValidityTime))) {
+            throw new CredentialsExpiredException(StringUtils.EMPTY);
+        }
 
         return buildAuthDto(user);
     }
@@ -72,7 +72,7 @@ public class AuthService {
 
         String refreshToken = tokenUtil.generateRefreshToken();
         LocalDateTime expirationTime = LocalDateTime.now(UTC).plus(refreshValidityTime, ChronoUnit.DAYS);
-        user.setRefreshToken(passwordEncoder.encode(refreshToken));
+        user.setRefreshToken(DigestUtils.sha256Hex(refreshToken));
         user.setRefreshTokenExpiration(expirationTime);
         userRepository.save(user);
 

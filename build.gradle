@@ -25,6 +25,8 @@ dependencies {
     implementation group: 'com.google.api-client', name: 'google-api-client', version: googleApiClient
 
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: commonsLangVersion
+    implementation group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion
+
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion

@@ -1,9 +1,5 @@
 package com.explosion204.wclookup.security;
 
-import com.explosion204.wclookup.model.entity.User;
-import com.explosion204.wclookup.service.UserService;
-import com.explosion204.wclookup.service.util.TokenUtil;
-import org.springframework.lang.NonNullApi;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
