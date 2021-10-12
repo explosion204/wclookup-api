@@ -7,17 +7,14 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 import java.util.List;
 
-import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
-import static com.explosion204.wclookup.security.ApplicationAuthority.USER;
-
 public class JwtAuthentication implements Authentication {
     private Collection<? extends GrantedAuthority> authorities;
     private User user;
-    private String accessToken;
+    private final String accessToken;
     private boolean isAuthenticated;
 
     public JwtAuthentication(String accessToken) {
-        //
+        this.accessToken = accessToken;
         authorities = List.of();
     }
 
@@ -33,12 +30,12 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getDetails() {
-        return user;
+        return null;
     }
 
     @Override
     public Object getPrincipal() {
-        return user.getId();
+        return user;
     }
 
     @Override
@@ -48,7 +45,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException();
+        return user != null ? user.getId().toString() : null;
     }
 
     @Override
@@ -56,15 +53,11 @@ public class JwtAuthentication implements Authentication {
         this.isAuthenticated = isAuthenticated;
     }
 
-    public String getAccessToken() {
-        return accessToken;
-    }
-
     public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
     }
 
-    public void setUser(User user) {
+    public void setPrincipal(User user) {
         this.user = user;
     }
 }

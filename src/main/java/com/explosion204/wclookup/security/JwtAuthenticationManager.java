@@ -2,7 +2,6 @@ package com.explosion204.wclookup.security;
 
 import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.UserRepository;
-import com.explosion204.wclookup.service.UserService;
 import com.explosion204.wclookup.service.util.TokenUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
 import static com.explosion204.wclookup.security.ApplicationAuthority.USER;
@@ -30,16 +30,19 @@ public class JwtAuthenticationManager implements AuthenticationManager {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthentication jwtAuthentication = (JwtAuthentication) authentication;
-        String accessToken = jwtAuthentication.getAccessToken();
+        String accessToken = jwtAuthentication.getCredentials().toString();
 
         Map<String, Object> claims = tokenUtil.parseToken(accessToken);
 
         if (claims.containsKey(USER_ID_CLAIM)) {
-            long userId = ((Double) claims.get(USER_ID_CLAIM)).longValue();
-            User user = userRepository.getById(userId);
-            jwtAuthentication.setAuthorities(List.of(user.isAdmin() ? ADMIN : USER));
-            jwtAuthentication.setUser(user);
-            jwtAuthentication.setAuthenticated(true);
+            long userId = (Integer) claims.get(USER_ID_CLAIM);
+            Optional<User> user = userRepository.findById(userId);
+
+            if (user.isPresent()) {
+                jwtAuthentication.setAuthorities(List.of(user.get().isAdmin() ? ADMIN : USER));
+                jwtAuthentication.setPrincipal(user.get());
+                jwtAuthentication.setAuthenticated(true);
+            }
         }
 
         return jwtAuthentication;

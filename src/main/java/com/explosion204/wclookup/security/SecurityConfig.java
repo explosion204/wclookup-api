@@ -5,46 +5,48 @@ import com.explosion204.wclookup.service.util.TokenUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
+    private static final String AUTH_ENDPOINTS = "/api/auth/**";
+    private static final String USERS_ENDPOINTS = "/api/users/**";
+
     private final TokenUtil tokenUtil;
     private final UserRepository userRepository;
 
-    public SecurityConfig(
-            UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder,
-            TokenUtil tokenUtil,
-            UserRepository userRepository
-    ) {
-        this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
+    public SecurityConfig(TokenUtil tokenUtil, UserRepository userRepository) {
         this.tokenUtil = tokenUtil;
         this.userRepository = userRepository;
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder);
+    public void configure(WebSecurity web) {
+        web.ignoring()
+                .antMatchers(AUTH_ENDPOINTS)
+                .antMatchers("/h2-console/**"); // TODO: 10/12/2021
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilter(new JwtFilter(authenticationManager()))
+        http
+                .addFilterBefore(new JwtFilter(authenticationManager()), BasicAuthenticationFilter.class)
+                .csrf().disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                    .antMatchers(USERS_ENDPOINTS).hasAuthority(ADMIN.getAuthority());
     }
 
     @Override
