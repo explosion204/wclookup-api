@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">wclookup</string>
+    <string name="title_activity_main">wclookup</string>
+    <string name="server_client_id">1019356447150-i36mu1756ijocodbu74gudamileqq3mp.apps.googleusercontent.com</string>
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="location">Current location</string>
+    <string name="radius_search">Radius search</string>
+</resources>
