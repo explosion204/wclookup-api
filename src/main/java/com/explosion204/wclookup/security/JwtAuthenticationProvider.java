@@ -3,7 +3,7 @@ package com.explosion204.wclookup.security;
 import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.UserRepository;
 import com.explosion204.wclookup.service.util.TokenUtil;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
@@ -16,13 +16,13 @@ import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
 import static com.explosion204.wclookup.security.ApplicationAuthority.USER;
 
 @Component
-public class JwtAuthenticationManager implements AuthenticationManager {
+public class JwtAuthenticationProvider implements AuthenticationProvider {
     private static final String USER_ID_CLAIM = "user_id";
 
     private final TokenUtil tokenUtil;
     private final UserRepository userRepository;
 
-    public JwtAuthenticationManager(TokenUtil tokenUtil, UserRepository userRepository) {
+    public JwtAuthenticationProvider(TokenUtil tokenUtil, UserRepository userRepository) {
         this.tokenUtil = tokenUtil;
         this.userRepository = userRepository;
     }
@@ -46,5 +46,10 @@ public class JwtAuthenticationManager implements AuthenticationManager {
         }
 
         return jwtAuthentication;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return authentication.equals(JwtAuthentication.class);
     }
 }

@@ -1,9 +1,8 @@
 package com.explosion204.wclookup.security;
 
-import com.explosion204.wclookup.model.repository.UserRepository;
-import com.explosion204.wclookup.service.util.TokenUtil;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,12 +18,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String AUTH_ENDPOINTS = "/api/auth/**";
     private static final String USERS_ENDPOINTS = "/api/users/**";
 
-    private final TokenUtil tokenUtil;
-    private final UserRepository userRepository;
+    private final AuthenticationProvider authenticationProvider;
 
-    public SecurityConfig(TokenUtil tokenUtil, UserRepository userRepository) {
-        this.tokenUtil = tokenUtil;
-        this.userRepository = userRepository;
+    public SecurityConfig(AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected AuthenticationManager authenticationManager() {
-        return new JwtAuthenticationManager(tokenUtil, userRepository);
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider);
     }
 }
