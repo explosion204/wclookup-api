@@ -10,13 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String AUTH_ENDPOINTS = "/api/auth/**";
-    private static final String USERS_ENDPOINTS = "/api/users/**";
 
     private final AuthenticationProvider authenticationProvider;
 
@@ -26,9 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring()
-                .antMatchers(AUTH_ENDPOINTS)
-                .antMatchers("/h2-console/**"); // TODO: 10/12/2021
+        web.ignoring().antMatchers(AUTH_ENDPOINTS);
     }
 
     @Override
@@ -40,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                    .antMatchers(USERS_ENDPOINTS).hasAuthority(ADMIN.getAuthority());
+                .anyRequest().permitAll();
     }
 
     @Override

@@ -1,18 +1,20 @@
 package com.explosion204.wclookup.controller;
 
 import com.explosion204.wclookup.service.ToiletService;
+import com.explosion204.wclookup.service.dto.SearchDto;
 import com.explosion204.wclookup.service.dto.ToiletDto;
+import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -29,14 +31,19 @@ public class ToiletController {
     }
 
     @GetMapping
-    public ResponseEntity<PaginationModel<ToiletDto>> getToilets(@PageableDefault Pageable pageable) {
-        PaginationModel<ToiletDto> toilets = toiletService.findAll(pageable);
+    public ResponseEntity<PaginationModel<ToiletDto>> getToilets(
+            @ModelAttribute SearchDto searchDto,
+            @RequestParam(required = false) Integer page,
+            @RequestBody(required = false) Integer pageSize
+    ) {
+
+        PaginationModel<ToiletDto> toilets = toiletService.find(searchDto, PageContext.of(page, pageSize));
         return new ResponseEntity<>(toilets, OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ToiletDto> getToilet(@PathVariable("id") long id) {
-        ToiletDto toiletDto = toiletService.find(id);
+        ToiletDto toiletDto = toiletService.findById(id);
         return new ResponseEntity<>(toiletDto, OK);
     }
 

@@ -21,8 +21,8 @@ CREATE TABLE app_user (
     id BIGSERIAL PRIMARY KEY,
     google_id VARCHAR(256) NOT NULL UNIQUE,
     nickname VARCHAR(32) NOT NULL,
-    refresh_token CHAR(16) NOT NULL,
-    refresh_token_expiration TIMESTAMP NOT NULL,
+    refresh_token CHAR(64),
+    refresh_token_expiration TIMESTAMP,
     is_admin BOOLEAN NOT NULL
 );
 
@@ -33,11 +33,11 @@ CREATE TABLE review (
     rating DECIMAL(4, 3) NOT NULL,
     text VARCHAR(140),
 
-    CONSTRAINT review_to_user_fk FOREIGN KEY (user_id) REFERENCES app_user (id),
-    CONSTRAINT review_to_toilet_fk FOREIGN KEY (toilet_id) REFERENCES toilet (id)
+    CONSTRAINT review_to_user_fk FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE,
+    CONSTRAINT review_to_toilet_fk FOREIGN KEY (toilet_id) REFERENCES toilet (id) ON DELETE CASCADE
 );
 
-CREATE FUNCTION "getDistance"(lat1 DOUBLE PRECISION, long1 DOUBLE PRECISION, lat2 DOUBLE PRECISION, long2 DOUBLE PRECISION)
+CREATE FUNCTION getDistance(lat1 DOUBLE PRECISION, long1 DOUBLE PRECISION, lat2 DOUBLE PRECISION, long2 DOUBLE PRECISION)
     RETURNS DOUBLE PRECISION
     LANGUAGE plpgsql
 AS $$
@@ -48,34 +48,34 @@ BEGIN
 RETURN sqrt(x * x + y * y);
 END$$;
 
-CREATE FUNCTION "insert_update_handler"()
+CREATE OR REPLACE FUNCTION insertUpdateHandler()
     RETURNS trigger
     LANGUAGE plpgsql
 AS $$
 BEGIN
-UPDATE "public"."review"
-SET "rating" = COALESCE((SELECT AVG("review"."rating") FROM "public"."review" WHERE "review"."toilet_id" = new."toilet_id"), 0)
-WHERE "toilet"."id" = new."toilet_id";
+UPDATE toilet
+SET rating = COALESCE((SELECT AVG(rating) FROM review WHERE toilet_id = new.toilet_id), 0)
+WHERE id = new.toilet_id;
 RETURN new;
 END $$;
 
-CREATE FUNCTION "delete_handler"()
+CREATE OR REPLACE FUNCTION deleteHandler()
     RETURNS trigger
     LANGUAGE plpgsql
 AS $$
 BEGIN
-UPDATE "public"."toilet"
-SET "rating" = COALESCE((SELECT AVG("review"."rating") FROM "public"."review" WHERE "review"."toilet_id" = old."toilet_id"), 0)
-WHERE "toilet"."id" = old."toilet_id";
+UPDATE toilet
+SET rating = COALESCE((SELECT AVG(rating) FROM review WHERE toilet_id = old.toilet_id), 0)
+WHERE id = old.toilet_id;
 RETURN new;
 END $$;
 
 CREATE TRIGGER on_review_insert_update
-    AFTER INSERT OR UPDATE ON "public"."review"
+    AFTER INSERT OR UPDATE ON review
                         FOR EACH ROW
-                        EXECUTE PROCEDURE "insert_update_handler"();
+                        EXECUTE PROCEDURE insertUpdateHandler();
 
 CREATE TRIGGER on_review_delete
-    AFTER DELETE ON "public"."review"
+    AFTER DELETE ON review
     FOR EACH ROW
-    EXECUTE PROCEDURE "delete_handler"();
+    EXECUTE PROCEDURE deleteHandler();

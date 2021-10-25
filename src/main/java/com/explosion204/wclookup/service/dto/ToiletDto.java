@@ -2,6 +2,7 @@ package com.explosion204.wclookup.service.dto;
 
 import com.explosion204.wclookup.model.entity.Toilet;
 import com.explosion204.wclookup.service.validation.constraint.RestDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -29,14 +30,21 @@ public class ToiletDto extends IdentifiableDto {
     @DecimalMax("180.0")
     private Double longitude;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private double rating;
+    private boolean isConfirmed;
+
+
     public Toilet toToilet() {
         Toilet toilet = new Toilet();
 
-        toilet.setId(getId());
+        toilet.setId(id);
         toilet.setAddress(address);
         toilet.setSchedule(schedule);
         toilet.setLatitude(latitude);
         toilet.setLongitude(longitude);
+        toilet.setRating(rating);
+        toilet.setConfirmed(isConfirmed);
 
         return toilet;
     }
@@ -44,11 +52,13 @@ public class ToiletDto extends IdentifiableDto {
     public static ToiletDto fromToilet(Toilet toilet) {
         ToiletDto toiletDto = new ToiletDto();
 
-        toiletDto.setId(toilet.getId());
-        toiletDto.setAddress(toilet.getAddress());
-        toiletDto.setSchedule(toilet.getSchedule());
-        toiletDto.setLatitude(toilet.getLatitude());
-        toiletDto.setLongitude(toilet.getLongitude());
+        toiletDto.id = toilet.getId();
+        toiletDto.address = toilet.getAddress();
+        toiletDto.schedule = toilet.getSchedule();
+        toiletDto.latitude = toilet.getLatitude();
+        toiletDto.longitude = toilet.getLongitude();
+        toiletDto.rating = toilet.getRating();
+        toiletDto.isConfirmed = toilet.isConfirmed();
 
         return toiletDto;
     }

@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public abstract class IdentifiableDto {
-    private Long id;
+    protected Long id;
 }

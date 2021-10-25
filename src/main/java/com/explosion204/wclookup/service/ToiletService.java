@@ -3,11 +3,13 @@ package com.explosion204.wclookup.service;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.model.entity.Toilet;
 import com.explosion204.wclookup.model.repository.ToiletRepository;
+import com.explosion204.wclookup.service.dto.SearchDto;
 import com.explosion204.wclookup.service.dto.ToiletDto;
+import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import com.explosion204.wclookup.service.validation.DtoValidation;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,14 +20,27 @@ public class ToiletService {
         this.toiletRepository = toiletRepository;
     }
 
-    public PaginationModel<ToiletDto> findAll(Pageable pageable) {
-        Page<ToiletDto> page = toiletRepository.findAll(pageable)
-                .map(ToiletDto::fromToilet);
-        return PaginationModel.fromPage(page);
+    public PaginationModel<ToiletDto> find(SearchDto searchDto, PageContext pageContext) {
+        Page<Toilet> toiletPage;
+        PageRequest pageRequest = pageContext.toPageRequest();
+
+        if (searchDto.hasNoNullAttributes()) {
+            double latitude = searchDto.getLatitude();
+            double longitude = searchDto.getLongitude();
+            int radius = searchDto.getRadius();
+
+            toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, pageRequest);
+        } else {
+            toiletPage = toiletRepository.findAll(pageRequest);
+        }
+
+        Page<ToiletDto> dtoPage = toiletPage.map(ToiletDto::fromToilet);
+        return PaginationModel.fromPage(dtoPage);
     }
 
-    public ToiletDto find(long id) {
-        Toilet toilet = toiletRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public ToiletDto findById(long id) {
+        Toilet toilet = toiletRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Toilet.class));
         return ToiletDto.fromToilet(toilet);
     }
 
@@ -40,7 +55,7 @@ public class ToiletService {
     @DtoValidation
     public ToiletDto update(ToiletDto toiletDto) {
         Toilet toilet = toiletRepository.findById(toiletDto.getId())
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(Toilet.class));
 
         if (toiletDto.getAddress() != null) {
             toilet.setAddress(toiletDto.getAddress());
@@ -64,7 +79,7 @@ public class ToiletService {
 
     public void delete(long id) {
         Toilet toilet = toiletRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(Toilet.class));
         toiletRepository.delete(toilet);
     }
 }

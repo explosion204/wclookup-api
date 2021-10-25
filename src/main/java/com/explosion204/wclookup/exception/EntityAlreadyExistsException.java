@@ -1,9 +1,9 @@
 package com.explosion204.wclookup.exception;
 
-public class EntityNotFoundException extends RuntimeException {
+public class EntityAlreadyExistsException extends RuntimeException {
     private final Class<?> causeEntity;
 
-    public EntityNotFoundException(Class<?> causeEntity) {
+    public EntityAlreadyExistsException(Class<?> causeEntity) {
         this.causeEntity = causeEntity;
     }
 

@@ -4,9 +4,10 @@ import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.UserRepository;
 import com.explosion204.wclookup.service.dto.UserDto;
+import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,15 +18,16 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public PaginationModel<UserDto> findAll(Pageable pageable) {
-        Page<UserDto> page = userRepository.findAll(pageable)
+    public PaginationModel<UserDto> findAll(PageContext pageContext) {
+        PageRequest pageRequest = pageContext.toPageRequest();
+        Page<UserDto> page = userRepository.findAll(pageRequest)
                 .map(UserDto::fromUser);
         return PaginationModel.fromPage(page);
     }
 
-    public UserDto find(long id) {
+    public UserDto findById(long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException(User.class));
         return UserDto.fromUser(user);
     }
 }

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -41,7 +40,6 @@ public class AuthService {
         this.tokenUtil = tokenUtil;
     }
 
-    @Transactional
     public AuthDto authenticate(String googleAccessToken) {
         GoogleIdToken googleIdToken = parseGoogleAccessToken(googleAccessToken)
             .orElseThrow(() -> new BadCredentialsException(StringUtils.EMPTY));

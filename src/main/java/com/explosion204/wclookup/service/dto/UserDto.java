@@ -17,28 +17,15 @@ public class UserDto extends IdentifiableDto {
     private LocalDateTime refreshTokenExpiration;
     private boolean isAdmin;
 
-    public User toUser() {
-        User user = new User();
-
-        user.setId(getId());
-        user.setGoogleId(googleId);
-        user.setNickname(nickname);
-        user.setRefreshToken(refreshToken);
-        user.setRefreshTokenExpiration(refreshTokenExpiration);
-        user.setAdmin(isAdmin);
-
-        return user;
-    }
-
     public static UserDto fromUser(User user) {
         UserDto userDto = new UserDto();
 
-        userDto.setId(user.getId());
-        userDto.setGoogleId(user.getGoogleId());
-        userDto.setNickname(user.getNickname());
-        userDto.setRefreshToken(user.getRefreshToken());
-        userDto.setRefreshTokenExpiration(user.getRefreshTokenExpiration());
-        userDto.setAdmin(user.isAdmin());
+        userDto.id = user.getId();
+        userDto.googleId = user.getGoogleId();
+        userDto.nickname = user.getNickname();
+        userDto.refreshToken = user.getRefreshToken();
+        userDto.refreshTokenExpiration = user.getRefreshTokenExpiration();
+        userDto.isAdmin = user.isAdmin();
 
         return userDto;
     }
