@@ -3,8 +3,10 @@ package com.explosion204.wclookup.controller;
 import com.explosion204.wclookup.exception.EntityAlreadyExistsException;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.exception.InvalidPageContextException;
+import com.explosion204.wclookup.controller.debug.DebugMailLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
@@ -42,9 +45,15 @@ public class ApplicationExceptionHandler {
     private static final Logger logger = LogManager.getLogger();
 
     private final ResourceBundleMessageSource messageSource;
+    private DebugMailLogger debugMailLogger;
 
     public ApplicationExceptionHandler(ResourceBundleMessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+
+    @Autowired(required = false)
+    public void setMailLogger(DebugMailLogger debugMailLogger) {
+        this.debugMailLogger = debugMailLogger;
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -91,9 +100,14 @@ public class ApplicationExceptionHandler {
         return buildErrorResponseEntity(BAD_REQUEST, String.format(errorMessage, invalidValue));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleDefault(Exception e) {
+    @ExceptionHandler(Throwable.class)
+    public ResponseEntity<Object> handleDefault(HttpServletRequest request, Exception e) {
         logger.error("Uncaught exception", e);
+
+        if (debugMailLogger != null) {
+            debugMailLogger.log(request, e);
+        }
+
         String errorMessage = getErrorMessage(INTERNAL_SERVER_ERROR_MESSAGE);
         return buildErrorResponseEntity(INTERNAL_SERVER_ERROR, errorMessage);
     }
