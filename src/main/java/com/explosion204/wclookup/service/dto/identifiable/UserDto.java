@@ -6,8 +6,9 @@ import com.explosion204.wclookup.service.validation.annotation.IdentifiableDtoCo
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.Size;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -15,22 +16,14 @@ import java.time.LocalDateTime;
 @IdentifiableDtoConstraint
 @DtoClass
 public class UserDto extends IdentifiableDto {
-    private String googleId;
-    private String nickname;
-    private String refreshToken;
-    private LocalDateTime refreshTokenExpiration;
-    private boolean isAdmin;
-    // TODO: 11/13/2021 validation
+    @Size(max = 32)
+    private String nickname = StringUtils.EMPTY;
 
     public static UserDto fromUser(User user) {
         UserDto userDto = new UserDto();
 
         userDto.id = user.getId();
-        userDto.googleId = user.getGoogleId();
         userDto.nickname = user.getNickname();
-        userDto.refreshToken = user.getRefreshToken();
-        userDto.refreshTokenExpiration = user.getRefreshTokenExpiration();
-        userDto.isAdmin = user.isAdmin();
 
         return userDto;
     }

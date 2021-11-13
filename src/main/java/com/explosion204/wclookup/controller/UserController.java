@@ -5,7 +5,9 @@ import com.explosion204.wclookup.service.dto.identifiable.UserDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +38,13 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable("id") long id) {
         UserDto userDto = userService.findById(id);
         return new ResponseEntity<>(userDto, OK);
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or authentication.name eq T(String).valueOf(#id)")
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") long id, @RequestBody UserDto userDto) {
+        userDto.setId(id);
+        UserDto updatedUserDto = userService.update(userDto);
+        return new ResponseEntity<>(updatedUserDto, OK);
     }
 }

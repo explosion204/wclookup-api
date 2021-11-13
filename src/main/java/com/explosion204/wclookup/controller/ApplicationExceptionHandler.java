@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -38,6 +39,7 @@ public class ApplicationExceptionHandler {
     private static final String INVALID_PAGE_SIZE_MESSAGE = "invalid_page_size";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "internal_server_error";
     private static final String ACCESS_DENIED_MESSAGE = "access_denied";
+    private static final String INVALID_REQUEST_FORMAT_MESSAGE = "invalid_request_format";
 
     private static final Logger logger = LogManager.getLogger();
 
@@ -101,6 +103,12 @@ public class ApplicationExceptionHandler {
         };
 
         return responseUtil.buildErrorResponseEntity(BAD_REQUEST, String.format(errorMessage, invalidValue));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleBadRequest() {
+        String errorMessage = responseUtil.getErrorMessage(INVALID_REQUEST_FORMAT_MESSAGE);
+        return responseUtil.buildErrorResponseEntity(BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler(Throwable.class)

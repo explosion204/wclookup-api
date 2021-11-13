@@ -6,6 +6,7 @@ import com.explosion204.wclookup.model.repository.UserRepository;
 import com.explosion204.wclookup.service.dto.identifiable.UserDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
+import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,18 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class));
         return UserDto.fromUser(user);
+    }
+
+    @ValidateDto
+    public UserDto update(UserDto userDto) {
+        if (userDto.getNickname() != null) {
+            User user = userRepository.findById(userDto.getId())
+                    .orElseThrow(() -> new EntityNotFoundException(User.class));
+
+            user.setNickname(user.getNickname());
+            userRepository.save(user);
+        }
+
+        return userDto;
     }
 }
