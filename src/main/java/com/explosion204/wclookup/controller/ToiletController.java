@@ -1,6 +1,6 @@
 package com.explosion204.wclookup.controller;
 
-import com.explosion204.wclookup.controller.util.AuthUtil;
+import com.explosion204.wclookup.security.util.AuthUtil;
 import com.explosion204.wclookup.service.ToiletService;
 import com.explosion204.wclookup.service.dto.ToiletFilterDto;
 import com.explosion204.wclookup.service.dto.identifiable.ToiletDto;
@@ -39,7 +39,7 @@ public class ToiletController {
     public ResponseEntity<PaginationModel<ToiletDto>> getToilets(
             @ModelAttribute ToiletFilterDto toiletFilterDto,
             @RequestParam(required = false) Integer page,
-            @RequestBody(required = false) Integer pageSize
+            @RequestParam(required = false) Integer pageSize
     ) {
         PageContext pageContext = PageContext.of(page, pageSize);
         // admin can load get all toilets, even not confirmed

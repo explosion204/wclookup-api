@@ -30,7 +30,7 @@ public class TicketController {
     @GetMapping
     public ResponseEntity<PaginationModel<TicketDto>> getTickets(
             @RequestParam(required = false) Integer page,
-            @RequestBody(required = false) Integer pageSize
+            @RequestParam(required = false) Integer pageSize
     ) {
         PaginationModel<TicketDto> tickets = ticketService.findAll(PageContext.of(page, pageSize));
         return new ResponseEntity<>(tickets, OK);

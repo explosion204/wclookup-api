@@ -1,5 +1,6 @@
 package com.explosion204.wclookup.controller.debug;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,7 @@ public class DebugMailLogger {
     public void log(HttpServletRequest request, Throwable e) {
         String requestMethod = request.getMethod();
         String requestUri = request.getRequestURI();
-        String queryParams = request.getQueryString();
+        String queryParams = request.getQueryString() != null ? request.getQueryString() : StringUtils.EMPTY;
         String stackTrace = ExceptionUtils.getStackTrace(e);
         String body = String.format(BUG_REPORT_BODY, requestMethod, requestUri, queryParams, stackTrace);
 

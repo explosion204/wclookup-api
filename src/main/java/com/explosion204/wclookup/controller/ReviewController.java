@@ -5,6 +5,7 @@ import com.explosion204.wclookup.service.dto.identifiable.ReviewDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,11 +30,17 @@ public class ReviewController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #toiletId ne null")
     public ResponseEntity<PaginationModel<ReviewDto>> getReviews(
+            @RequestParam(required = false) Long toiletId,
             @RequestParam(required = false) Integer page,
-            @RequestBody(required = false) Integer pageSize
+            @RequestParam(required = false) Integer pageSize
     ) {
-        PaginationModel<ReviewDto> reviews = reviewService.findAll(PageContext.of(page, pageSize));
+        PageContext pageContext = PageContext.of(page, pageSize);
+        PaginationModel<ReviewDto> reviews = toiletId != null
+                ? reviewService.findByToiletId(toiletId, pageContext)
+                : reviewService.findAll(pageContext);
+
         return new ResponseEntity<>(reviews, OK);
     }
 
@@ -44,6 +51,7 @@ public class ReviewController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or authentication.name eq T(String).valueOf(#reviewDto.userId)")
     public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto) {
         reviewDto.setId(null); // new entity cannot have id
         ReviewDto createdReviewDto = reviewService.create(reviewDto);
@@ -51,6 +59,8 @@ public class ReviewController {
         return new ResponseEntity<>(createdReviewDto, CREATED);
     }
 
+    // security logic for this endpoint belongs to service layer
+    // main reason is to reduce amount of db calls
     @PatchMapping("/{id}")
     public ResponseEntity<ReviewDto> updateReview(@PathVariable("id") long id, @RequestBody ReviewDto reviewDto) {
         reviewDto.setId(id);
@@ -59,6 +69,8 @@ public class ReviewController {
         return new ResponseEntity<>(updatedReviewDto, OK);
     }
 
+    // security logic for this endpoint belongs to service layer
+    // main reason is to reduce amount of db calls
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable("id") long id) {
         reviewService.delete(id);

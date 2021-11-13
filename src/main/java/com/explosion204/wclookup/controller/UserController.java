@@ -28,7 +28,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<PaginationModel<UserDto>> getUsers(
             @RequestParam(required = false) Integer page,
-            @RequestBody(required = false) Integer pageSize
+            @RequestParam(required = false) Integer pageSize
     ) {
         PaginationModel<UserDto> users = userService.findAll(PageContext.of(page, pageSize));
         return new ResponseEntity<>(users, OK);

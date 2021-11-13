@@ -10,14 +10,17 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -27,6 +30,7 @@ import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuthService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private static final String USER_ID_CLAIM = "user_id";
 
     @Value("${refresh.validity_time}")
@@ -81,14 +85,19 @@ public class AuthService {
         return authDto;
     }
 
-    @SneakyThrows
     private Optional<GoogleIdToken> parseGoogleAccessToken(String accessToken) {
         HttpTransport httpTransport = new NetHttpTransport();
         JsonFactory jsonFactory = new GsonFactory();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(httpTransport, jsonFactory)
                 .build();
+        GoogleIdToken idToken = null;
 
-        GoogleIdToken idToken = verifier.verify(accessToken);
+        try {
+            idToken = verifier.verify(accessToken);
+        } catch (GeneralSecurityException | IOException | IllegalArgumentException e) {
+            logger.error("Unable to parse idToken", e);
+        }
+
         return Optional.ofNullable(idToken);
     }
 
