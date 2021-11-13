@@ -27,4 +27,7 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
             @Param("radius") int radius,
             Pageable pageable
     );
+
+    @Query(value = "SELECT t FROM Toilet t WHERE t.isConfirmed = true")
+    Page<Toilet> findAllConfirmed(Pageable pageable);
 }

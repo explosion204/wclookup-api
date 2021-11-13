@@ -20,7 +20,14 @@ public class ToiletService {
         this.toiletRepository = toiletRepository;
     }
 
-    public PaginationModel<ToiletDto> find(SearchDto searchDto, PageContext pageContext) {
+    public PaginationModel<ToiletDto> findAll(PageContext pageContext) {
+        PageRequest pageRequest = pageContext.toPageRequest();
+        Page<ToiletDto> page = toiletRepository.findAll(pageRequest)
+                .map(ToiletDto::fromToilet);
+        return PaginationModel.fromPage(page);
+    }
+
+    public PaginationModel<ToiletDto> findConfirmed(SearchDto searchDto, PageContext pageContext) {
         Page<Toilet> toiletPage;
         PageRequest pageRequest = pageContext.toPageRequest();
 
@@ -31,7 +38,7 @@ public class ToiletService {
 
             toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, pageRequest);
         } else {
-            toiletPage = toiletRepository.findAll(pageRequest);
+            toiletPage = toiletRepository.findAllConfirmed(pageRequest);
         }
 
         Page<ToiletDto> dtoPage = toiletPage.map(ToiletDto::fromToilet);

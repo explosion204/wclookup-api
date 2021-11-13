@@ -1,5 +1,7 @@
 package com.explosion204.wclookup.controller;
 
+import com.explosion204.wclookup.controller.util.AuthUtil;
+import com.explosion204.wclookup.security.ApplicationAuthority;
 import com.explosion204.wclookup.service.ToiletService;
 import com.explosion204.wclookup.service.dto.SearchDto;
 import com.explosion204.wclookup.service.dto.ToiletDto;
@@ -25,9 +27,11 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/toilets")
 public class ToiletController {
     private final ToiletService toiletService;
+    private final AuthUtil authUtil;
 
-    public ToiletController(ToiletService toiletService) {
+    public ToiletController(ToiletService toiletService, AuthUtil authUtil) {
         this.toiletService = toiletService;
+        this.authUtil = authUtil;
     }
 
     @GetMapping
@@ -36,8 +40,11 @@ public class ToiletController {
             @RequestParam(required = false) Integer page,
             @RequestBody(required = false) Integer pageSize
     ) {
-
-        PaginationModel<ToiletDto> toilets = toiletService.find(searchDto, PageContext.of(page, pageSize));
+        PageContext pageContext = PageContext.of(page, pageSize);
+        // admin can load get all toilets, even not confirmed
+        PaginationModel<ToiletDto> toilets = authUtil.hasAuthority(ApplicationAuthority.ADMIN.getAuthority())
+                ? toiletService.findAll(pageContext)
+                : toiletService.findConfirmed(searchDto, pageContext);
         return new ResponseEntity<>(toilets, OK);
     }
 

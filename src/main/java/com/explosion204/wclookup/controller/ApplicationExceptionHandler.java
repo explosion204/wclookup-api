@@ -1,5 +1,6 @@
 package com.explosion204.wclookup.controller;
 
+import com.explosion204.wclookup.controller.util.ResponseUtil;
 import com.explosion204.wclookup.exception.EntityAlreadyExistsException;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.exception.InvalidPageContextException;
@@ -7,10 +8,8 @@ import com.explosion204.wclookup.controller.debug.DebugMailLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,13 +18,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -40,15 +37,15 @@ public class ApplicationExceptionHandler {
     private static final String INVALID_PAGE_NUMBER_MESSAGE = "invalid_page_number";
     private static final String INVALID_PAGE_SIZE_MESSAGE = "invalid_page_size";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "internal_server_error";
-    private static final String ERROR_MESSAGE = "errorMessage";
+    private static final String ACCESS_DENIED_MESSAGE = "access_denied";
 
     private static final Logger logger = LogManager.getLogger();
 
-    private final ResourceBundleMessageSource messageSource;
+    private final ResponseUtil responseUtil;
     private DebugMailLogger debugMailLogger;
 
-    public ApplicationExceptionHandler(ResourceBundleMessageSource messageSource) {
-        this.messageSource = messageSource;
+    public ApplicationExceptionHandler(ResponseUtil responseUtil) {
+        this.responseUtil = responseUtil;
     }
 
     @Autowired(required = false)
@@ -56,18 +53,24 @@ public class ApplicationExceptionHandler {
         this.debugMailLogger = debugMailLogger;
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied() {
+        String errorMessage = responseUtil.getErrorMessage(ACCESS_DENIED_MESSAGE);
+        return responseUtil.buildErrorResponseEntity(FORBIDDEN, errorMessage);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleNotFound(EntityNotFoundException e) {
         String causeEntityName = e.getCauseEntity().getSimpleName();
-        String errorMessage = String.format(getErrorMessage(ENTITY_NOT_FOUND_MESSAGE), causeEntityName);
-        return buildErrorResponseEntity(NOT_FOUND, errorMessage);
+        String errorMessage = String.format(responseUtil.getErrorMessage(ENTITY_NOT_FOUND_MESSAGE), causeEntityName);
+        return responseUtil.buildErrorResponseEntity(NOT_FOUND, errorMessage);
     }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ResponseEntity<Object> handleEntityAlreadyExists(EntityAlreadyExistsException e) {
         String causeEntityName = e.getCauseEntity().getSimpleName();
-        String errorMessage = String.format(getErrorMessage(ENTITY_ALREADY_EXISTS_MESSAGE), causeEntityName);
-        return buildErrorResponseEntity(CONFLICT, errorMessage);
+        String errorMessage = String.format(responseUtil.getErrorMessage(ENTITY_ALREADY_EXISTS_MESSAGE), causeEntityName);
+        return responseUtil.buildErrorResponseEntity(CONFLICT, errorMessage);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -77,14 +80,14 @@ public class ApplicationExceptionHandler {
                         .toList();
         String violationsString = String.join(ERROR_DELIMITER, violations);
 
-        String errorMessage = String.format(getErrorMessage(INVALID_ENTITY_MESSAGE), violationsString);
-        return buildErrorResponseEntity(BAD_REQUEST, errorMessage);
+        String errorMessage = String.format(responseUtil.getErrorMessage(INVALID_ENTITY_MESSAGE), violationsString);
+        return responseUtil.buildErrorResponseEntity(BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler({ BadCredentialsException.class, CredentialsExpiredException.class })
     public ResponseEntity<Object> handleAuthError() {
-        String errorMessage = getErrorMessage(INVALID_CREDENTIALS_MESSAGE);
-        return buildErrorResponseEntity(UNAUTHORIZED, errorMessage);
+        String errorMessage = responseUtil.getErrorMessage(INVALID_CREDENTIALS_MESSAGE);
+        return responseUtil.buildErrorResponseEntity(UNAUTHORIZED, errorMessage);
     }
 
     @ExceptionHandler(InvalidPageContextException.class)
@@ -93,11 +96,11 @@ public class ApplicationExceptionHandler {
         int invalidValue = e.getInvalidValue();
 
         String errorMessage = switch (errorType) {
-            case INVALID_PAGE_NUMBER -> getErrorMessage(INVALID_PAGE_NUMBER_MESSAGE);
-            case INVALID_PAGE_SIZE -> getErrorMessage(INVALID_PAGE_SIZE_MESSAGE);
+            case INVALID_PAGE_NUMBER -> responseUtil.getErrorMessage(INVALID_PAGE_NUMBER_MESSAGE);
+            case INVALID_PAGE_SIZE -> responseUtil.getErrorMessage(INVALID_PAGE_SIZE_MESSAGE);
         };
 
-        return buildErrorResponseEntity(BAD_REQUEST, String.format(errorMessage, invalidValue));
+        return responseUtil.buildErrorResponseEntity(BAD_REQUEST, String.format(errorMessage, invalidValue));
     }
 
     @ExceptionHandler(Throwable.class)
@@ -108,19 +111,7 @@ public class ApplicationExceptionHandler {
             debugMailLogger.log(request, e);
         }
 
-        String errorMessage = getErrorMessage(INTERNAL_SERVER_ERROR_MESSAGE);
-        return buildErrorResponseEntity(INTERNAL_SERVER_ERROR, errorMessage);
-    }
-
-    private String getErrorMessage(String errorMessageName) {
-        Locale locale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage(errorMessageName, null, locale);
-    }
-
-    private ResponseEntity<Object> buildErrorResponseEntity(HttpStatus status, String errorMessage) {
-        Map<String, Object> body = new HashMap<>();
-        body.put(ERROR_MESSAGE, errorMessage);
-
-        return new ResponseEntity<>(body, status);
+        String errorMessage = responseUtil.getErrorMessage(INTERNAL_SERVER_ERROR_MESSAGE);
+        return responseUtil.buildErrorResponseEntity(INTERNAL_SERVER_ERROR, errorMessage);
     }
 }
