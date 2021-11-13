@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ToiletRepository extends JpaRepository<Toilet, Long> {
     @Query(
         value = """
@@ -30,4 +32,7 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
 
     @Query(value = "SELECT t FROM Toilet t WHERE t.isConfirmed = true")
     Page<Toilet> findAllConfirmed(Pageable pageable);
+
+    @Query(value = "SELECT t FROM Toilet t WHERE t.id = :id AND t.isConfirmed = true")
+    Optional<Toilet> findByIdConfirmed(@Param("id") long id);
 }

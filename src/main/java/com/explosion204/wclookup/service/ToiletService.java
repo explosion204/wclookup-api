@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ToiletService {
     private final ToiletRepository toiletRepository;
@@ -27,7 +29,7 @@ public class ToiletService {
         return PaginationModel.fromPage(page);
     }
 
-    public PaginationModel<ToiletDto> findConfirmed(SearchDto searchDto, PageContext pageContext) {
+    public PaginationModel<ToiletDto> findByParams(SearchDto searchDto, PageContext pageContext) {
         Page<Toilet> toiletPage;
         PageRequest pageRequest = pageContext.toPageRequest();
 
@@ -45,9 +47,11 @@ public class ToiletService {
         return PaginationModel.fromPage(dtoPage);
     }
 
-    public ToiletDto findById(long id) {
-        Toilet toilet = toiletRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Toilet.class));
+    public ToiletDto findById(long id, boolean requireConfirmed) {
+        Optional<Toilet> result = requireConfirmed
+                ? toiletRepository.findByIdConfirmed(id)
+                : toiletRepository.findById(id);
+        Toilet toilet = result.orElseThrow(() -> new EntityNotFoundException(Toilet.class));
         return ToiletDto.fromToilet(toilet);
     }
 

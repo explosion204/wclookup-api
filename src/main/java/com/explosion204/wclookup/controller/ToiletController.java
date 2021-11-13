@@ -1,7 +1,6 @@
 package com.explosion204.wclookup.controller;
 
 import com.explosion204.wclookup.controller.util.AuthUtil;
-import com.explosion204.wclookup.security.ApplicationAuthority;
 import com.explosion204.wclookup.service.ToiletService;
 import com.explosion204.wclookup.service.dto.SearchDto;
 import com.explosion204.wclookup.service.dto.ToiletDto;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
@@ -42,15 +42,18 @@ public class ToiletController {
     ) {
         PageContext pageContext = PageContext.of(page, pageSize);
         // admin can load get all toilets, even not confirmed
-        PaginationModel<ToiletDto> toilets = authUtil.hasAuthority(ApplicationAuthority.ADMIN.getAuthority())
+        PaginationModel<ToiletDto> toilets = authUtil.hasAuthority(ADMIN.getAuthority())
                 ? toiletService.findAll(pageContext)
-                : toiletService.findConfirmed(searchDto, pageContext);
+                : toiletService.findByParams(searchDto, pageContext);
         return new ResponseEntity<>(toilets, OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ToiletDto> getToilet(@PathVariable("id") long id) {
-        ToiletDto toiletDto = toiletService.findById(id);
+        // admin can view not confirmed toilets
+        boolean requireConfirmed = !authUtil.hasAuthority(ADMIN.getAuthority());
+        ToiletDto toiletDto = toiletService.findById(id, requireConfirmed);
+
         return new ResponseEntity<>(toiletDto, OK);
     }
 
