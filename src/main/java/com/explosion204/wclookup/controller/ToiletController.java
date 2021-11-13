@@ -60,7 +60,9 @@ public class ToiletController {
     @PostMapping
     public ResponseEntity<ToiletDto> createToilet(@RequestBody ToiletDto toiletDto) {
         toiletDto.setId(null); // new entity cannot have id
-        ToiletDto createdToiletDto = toiletService.create(toiletDto);
+        // user can only propose toilet (isConfirmed = false)
+        boolean isProposal = !authUtil.hasAuthority(ADMIN.getAuthority());
+        ToiletDto createdToiletDto = toiletService.create(toiletDto, isProposal);
 
         return new ResponseEntity<>(createdToiletDto, CREATED);
     }

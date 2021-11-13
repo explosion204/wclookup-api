@@ -56,7 +56,11 @@ public class ToiletService {
     }
 
     @DtoValidation
-    public ToiletDto create(ToiletDto toiletDto) {
+    public ToiletDto create(ToiletDto toiletDto, boolean isProposal) {
+        if (isProposal) {
+            toiletDto.setConfirmed(false);
+        }
+
         Toilet toilet = toiletDto.toToilet();
         Toilet savedToilet = toiletRepository.save(toilet);
 
