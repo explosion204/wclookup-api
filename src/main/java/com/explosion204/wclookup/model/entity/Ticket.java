@@ -21,5 +21,5 @@ public class Ticket {
     private String text;
     private String email;
     private LocalDateTime creationTime;
-    private boolean isResolved;
+    private boolean resolved;
 }

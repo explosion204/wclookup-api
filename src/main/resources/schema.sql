@@ -5,7 +5,7 @@ CREATE TABLE toilet (
     latitude DECIMAL NOT NULL,
     longitude DECIMAL NOT NULL,
     rating DECIMAL(4, 3) NOT NULL,
-    is_confirmed BOOLEAN NOT NULL
+    confirmed BOOLEAN NOT NULL
 );
 
 CREATE TABLE ticket (
@@ -14,7 +14,7 @@ CREATE TABLE ticket (
     text VARCHAR(1024) NOT NULL,
     email VARCHAR(100) NOT NULL,
     creation_time TIMESTAMP NOT NULL,
-    is_resolved BOOLEAN NOT NULL
+    resolved BOOLEAN NOT NULL
 );
 
 CREATE TABLE app_user (

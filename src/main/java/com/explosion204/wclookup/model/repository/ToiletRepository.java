@@ -14,12 +14,12 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
         value = """
             SELECT id, address, schedule, latitude, longitude, rating, is_confirmed
             FROM toilet
-            WHERE getDistance(latitude, longitude, :latitude, :longitude) < :radius AND is_confirmed = true
+            WHERE getDistance(latitude, longitude, :latitude, :longitude) < :radius AND confirmed = true
         """,
         countQuery = """
             SELECT COUNT(id)
             FROM toilet
-            WHERE getDistance(latitude, longitude, :latitude, :longitude) < :radius AND is_confirmed = true
+            WHERE getDistance(latitude, longitude, :latitude, :longitude) < :radius AND confirmed = true
         """,
         nativeQuery = true
     )
@@ -30,9 +30,9 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
             Pageable pageable
     );
 
-    @Query(value = "SELECT t FROM Toilet t WHERE t.isConfirmed = true")
+    @Query(value = "SELECT t FROM Toilet t WHERE t.confirmed = true")
     Page<Toilet> findAllConfirmed(Pageable pageable);
 
-    @Query(value = "SELECT t FROM Toilet t WHERE t.id = :id AND t.isConfirmed = true")
+    @Query(value = "SELECT t FROM Toilet t WHERE t.id = :id AND t.confirmed = true")
     Optional<Toilet> findByIdConfirmed(@Param("id") long id);
 }

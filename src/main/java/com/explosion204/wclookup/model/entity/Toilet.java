@@ -23,7 +23,7 @@ public class Toilet {
     private double latitude;
     private double longitude;
     private double rating;
-    private boolean isConfirmed;
+    private boolean confirmed;
 
     @OneToMany(mappedBy = "toilet")
     private List<Review> reviews;

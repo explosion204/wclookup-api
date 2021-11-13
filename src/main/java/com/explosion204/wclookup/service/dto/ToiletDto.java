@@ -32,8 +32,7 @@ public class ToiletDto extends IdentifiableDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private double rating;
-    private boolean isConfirmed;
-
+    private Boolean confirmed;
 
     public Toilet toToilet() {
         Toilet toilet = new Toilet();
@@ -44,7 +43,7 @@ public class ToiletDto extends IdentifiableDto {
         toilet.setLatitude(latitude);
         toilet.setLongitude(longitude);
         toilet.setRating(rating);
-        toilet.setConfirmed(isConfirmed);
+        toilet.setConfirmed(confirmed);
 
         return toilet;
     }
@@ -58,7 +57,7 @@ public class ToiletDto extends IdentifiableDto {
         toiletDto.latitude = toilet.getLatitude();
         toiletDto.longitude = toilet.getLongitude();
         toiletDto.rating = toilet.getRating();
-        toiletDto.isConfirmed = toilet.isConfirmed();
+        toiletDto.confirmed = toilet.isConfirmed();
 
         return toiletDto;
     }

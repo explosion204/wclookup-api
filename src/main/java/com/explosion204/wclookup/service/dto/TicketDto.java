@@ -24,7 +24,7 @@ public class TicketDto extends IdentifiableDto {
     private String email;
 
     private LocalDateTime creationTime;
-    private boolean isResolved;
+    private boolean resolved;
 
     public Ticket toTicket() {
         Ticket ticket = new Ticket();
@@ -33,7 +33,7 @@ public class TicketDto extends IdentifiableDto {
         ticket.setSubject(subject);
         ticket.setText(text);
         ticket.setEmail(email);
-        ticket.setResolved(isResolved);
+        ticket.setResolved(resolved);
 
         return ticket;
     }
@@ -44,7 +44,7 @@ public class TicketDto extends IdentifiableDto {
         ticketDto.subject = ticket.getSubject();
         ticketDto.text = ticket.getText();
         ticketDto.email = ticket.getEmail();
-        ticketDto.isResolved = ticket.isResolved();
+        ticketDto.resolved = ticket.isResolved();
 
         return ticketDto;
     }

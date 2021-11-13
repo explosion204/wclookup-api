@@ -88,6 +88,10 @@ public class ToiletService {
             toilet.setLatitude(toiletDto.getLongitude());
         }
 
+        if (toiletDto.getConfirmed() != null) {
+            toilet.setConfirmed(toiletDto.getConfirmed());
+        }
+
         Toilet updatedToilet = toiletRepository.save(toilet);
         return ToiletDto.fromToilet(updatedToilet);
     }

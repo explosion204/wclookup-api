@@ -7,6 +7,7 @@ import com.explosion204.wclookup.service.dto.ToiletDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -68,6 +69,7 @@ public class ToiletController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ToiletDto> updateToilet(@PathVariable("id") long id, @RequestBody ToiletDto toiletDto) {
         toiletDto.setId(id); // existing entity must have id
         ToiletDto updatedToiletDto = toiletService.update(toiletDto);
@@ -77,6 +79,7 @@ public class ToiletController {
 
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteToilet(@PathVariable("id") long id) {
         toiletService.delete(id);
         return new ResponseEntity<>(NO_CONTENT);
