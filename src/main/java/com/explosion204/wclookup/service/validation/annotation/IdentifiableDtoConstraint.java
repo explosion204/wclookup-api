@@ -1,4 +1,6 @@
-package com.explosion204.wclookup.service.validation.constraint;
+package com.explosion204.wclookup.service.validation.annotation;
+
+import com.explosion204.wclookup.service.validation.constraint.IdentifiableDtoValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -9,10 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Constraint(validatedBy = RestDtoValidator.class)
+@Constraint(validatedBy = IdentifiableDtoValidator.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RestDto {
+public @interface IdentifiableDtoConstraint {
     Class<?>[] groups() default {};
     // I do not like this hardcode!!! =(
     String message() default "during creation entity must not have any null properties";

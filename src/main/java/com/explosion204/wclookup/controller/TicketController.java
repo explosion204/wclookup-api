@@ -1,7 +1,7 @@
 package com.explosion204.wclookup.controller;
 
 import com.explosion204.wclookup.service.TicketService;
-import com.explosion204.wclookup.service.dto.TicketDto;
+import com.explosion204.wclookup.service.dto.identifiable.TicketDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.http.ResponseEntity;

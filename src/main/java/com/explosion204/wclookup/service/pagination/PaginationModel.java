@@ -1,6 +1,6 @@
 package com.explosion204.wclookup.service.pagination;
 
-import com.explosion204.wclookup.service.dto.IdentifiableDto;
+import com.explosion204.wclookup.service.dto.identifiable.IdentifiableDto;
 import lombok.Data;
 import org.springframework.data.domain.Page;
 

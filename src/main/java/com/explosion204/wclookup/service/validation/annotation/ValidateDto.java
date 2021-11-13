@@ -1,4 +1,4 @@
-package com.explosion204.wclookup.service.validation;
+package com.explosion204.wclookup.service.validation.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DtoValidation {
+public @interface ValidateDto {
 
 }

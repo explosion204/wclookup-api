@@ -1,6 +1,7 @@
 package com.explosion204.wclookup.service.validation.constraint;
 
-import com.explosion204.wclookup.service.dto.IdentifiableDto;
+import com.explosion204.wclookup.service.dto.identifiable.IdentifiableDto;
+import com.explosion204.wclookup.service.validation.annotation.IdentifiableDtoConstraint;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
-public class RestDtoValidator implements ConstraintValidator<RestDto, IdentifiableDto> {
+public class IdentifiableDtoValidator implements ConstraintValidator<IdentifiableDtoConstraint, IdentifiableDto> {
     private static final String ID_FIELD = "id";
 
     @SneakyThrows

@@ -1,6 +1,8 @@
-package com.explosion204.wclookup.service.dto;
+package com.explosion204.wclookup.service.dto.identifiable;
 
 import com.explosion204.wclookup.model.entity.Ticket;
+import com.explosion204.wclookup.service.validation.annotation.DtoClass;
+import com.explosion204.wclookup.service.validation.annotation.IdentifiableDtoConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@IdentifiableDtoConstraint
+@DtoClass
 public class TicketDto extends IdentifiableDto {
     @Size(min = 1, max = 140)
     private String subject;

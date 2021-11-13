@@ -8,10 +8,10 @@ import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.ReviewRepository;
 import com.explosion204.wclookup.model.repository.ToiletRepository;
 import com.explosion204.wclookup.model.repository.UserRepository;
-import com.explosion204.wclookup.service.dto.ReviewDto;
+import com.explosion204.wclookup.service.dto.identifiable.ReviewDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
-import com.explosion204.wclookup.service.validation.DtoValidation;
+import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class ReviewService {
         return ReviewDto.fromReview(review);
     }
 
-    @DtoValidation
+    @ValidateDto
     public ReviewDto create(ReviewDto reviewDto) {
         Review review = reviewDto.toReview();
 
@@ -65,7 +65,7 @@ public class ReviewService {
         return ReviewDto.fromReview(savedReview);
     }
 
-    @DtoValidation
+    @ValidateDto
     public ReviewDto update(ReviewDto reviewDto) {
         Review review = reviewRepository.findById(reviewDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(Review.class));

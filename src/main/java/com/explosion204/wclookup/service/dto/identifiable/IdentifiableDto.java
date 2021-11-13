@@ -1,4 +1,4 @@
-package com.explosion204.wclookup.service.dto;
+package com.explosion204.wclookup.service.dto.identifiable;
 
 import lombok.Data;
 

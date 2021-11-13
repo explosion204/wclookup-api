@@ -3,11 +3,11 @@ package com.explosion204.wclookup.service;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.model.entity.Toilet;
 import com.explosion204.wclookup.model.repository.ToiletRepository;
-import com.explosion204.wclookup.service.dto.SearchDto;
-import com.explosion204.wclookup.service.dto.ToiletDto;
+import com.explosion204.wclookup.service.dto.ToiletFilterDto;
+import com.explosion204.wclookup.service.dto.identifiable.ToiletDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
-import com.explosion204.wclookup.service.validation.DtoValidation;
+import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,14 +29,15 @@ public class ToiletService {
         return PaginationModel.fromPage(page);
     }
 
-    public PaginationModel<ToiletDto> findByParams(SearchDto searchDto, PageContext pageContext) {
+    @ValidateDto
+    public PaginationModel<ToiletDto> findByParams(ToiletFilterDto toiletFilterDto, PageContext pageContext) {
         Page<Toilet> toiletPage;
         PageRequest pageRequest = pageContext.toPageRequest();
 
-        if (searchDto.hasNoNullAttributes()) {
-            double latitude = searchDto.getLatitude();
-            double longitude = searchDto.getLongitude();
-            int radius = searchDto.getRadius();
+        if (toiletFilterDto.hasNoNullAttributes()) {
+            double latitude = toiletFilterDto.getLatitude();
+            double longitude = toiletFilterDto.getLongitude();
+            int radius = toiletFilterDto.getRadius();
 
             toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, pageRequest);
         } else {
@@ -55,7 +56,7 @@ public class ToiletService {
         return ToiletDto.fromToilet(toilet);
     }
 
-    @DtoValidation
+    @ValidateDto
     public ToiletDto create(ToiletDto toiletDto, boolean isProposal) {
         if (isProposal) {
             toiletDto.setConfirmed(false);
@@ -67,7 +68,7 @@ public class ToiletService {
         return ToiletDto.fromToilet(savedToilet);
     }
 
-    @DtoValidation
+    @ValidateDto
     public ToiletDto update(ToiletDto toiletDto) {
         Toilet toilet = toiletRepository.findById(toiletDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(Toilet.class));

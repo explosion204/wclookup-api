@@ -3,10 +3,10 @@ package com.explosion204.wclookup.service;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.model.entity.Ticket;
 import com.explosion204.wclookup.model.repository.TicketRepository;
-import com.explosion204.wclookup.service.dto.TicketDto;
+import com.explosion204.wclookup.service.dto.identifiable.TicketDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
-import com.explosion204.wclookup.service.validation.DtoValidation;
+import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class TicketService {
         return TicketDto.fromTicket(ticket);
     }
 
-    @DtoValidation
+    @ValidateDto
     public TicketDto create(TicketDto ticketDto) {
         Ticket ticket = ticketDto.toTicket();
         Ticket savedTicket = ticketRepository.save(ticket);

@@ -3,7 +3,7 @@ package com.explosion204.wclookup.service;
 import com.explosion204.wclookup.exception.EntityNotFoundException;
 import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.UserRepository;
-import com.explosion204.wclookup.service.dto.UserDto;
+import com.explosion204.wclookup.service.dto.identifiable.UserDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.data.domain.Page;
