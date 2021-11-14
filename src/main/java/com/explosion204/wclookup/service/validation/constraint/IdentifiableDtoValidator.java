@@ -2,15 +2,13 @@ package com.explosion204.wclookup.service.validation.constraint;
 
 import com.explosion204.wclookup.service.dto.identifiable.IdentifiableDto;
 import com.explosion204.wclookup.service.validation.annotation.IdentifiableDtoConstraint;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.explosion204.wclookup.service.validation.annotation.Nullable;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Field;
 
 @Component
 public class IdentifiableDtoValidator implements ConstraintValidator<IdentifiableDtoConstraint, IdentifiableDto> {
@@ -20,14 +18,17 @@ public class IdentifiableDtoValidator implements ConstraintValidator<Identifiabl
     @Override
     public boolean isValid(IdentifiableDto dto, ConstraintValidatorContext context) {
         if (dto.getId() == null) {
-            // check if all fields are not null except for id
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> mappedObject = objectMapper.convertValue(dto, new TypeReference<>() {});
-            mappedObject.remove(ID_FIELD);
+            // check if all fields are not null except for id and those fields that has Nullable annotation
+            Field[] fields = dto.getClass().getFields();
 
-            return mappedObject.values()
-                    .stream()
-                    .allMatch(Objects::nonNull);
+            for (Field field : fields) {
+                if (field.get(dto) == null
+                    && !field.getName().equals(ID_FIELD)
+                    && !field.isAnnotationPresent(Nullable.class)) {
+
+                    return false;
+                }
+            }
         }
 
         return true;

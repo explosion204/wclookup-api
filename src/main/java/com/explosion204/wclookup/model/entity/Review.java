@@ -28,4 +28,7 @@ public class Review {
 
     private double rating;
     private String text;
+
+    // TODO: 11/14/2021 creation time
+    // TODO: 11/14/2021 update time
 }

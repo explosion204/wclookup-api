@@ -1,6 +1,7 @@
 package com.explosion204.wclookup.security;
 
-import com.explosion204.wclookup.controller.util.ResponseUtil;
+import com.explosion204.wclookup.controller.util.ErrorResponseUtil;
+import com.explosion204.wclookup.service.MessageSourceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -16,17 +17,22 @@ public class ApplicationAuthenticationEntryPoint implements AuthenticationEntryP
     private static final String UNAUTHORIZED_MESSAGE = "unauthorized";
     private static final String CONTENT_TYPE_JSON = "application/json";
 
-    private final ResponseUtil responseUtil;
+    private final MessageSourceService messageSourceService;
+    private final ErrorResponseUtil errorResponseUtil;
 
-    public ApplicationAuthenticationEntryPoint(ResponseUtil responseUtil) {
-        this.responseUtil = responseUtil;
+    public ApplicationAuthenticationEntryPoint(
+            MessageSourceService messageSourceService,
+            ErrorResponseUtil errorResponseUtil
+    ) {
+        this.messageSourceService = messageSourceService;
+        this.errorResponseUtil = errorResponseUtil;
     }
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException {
-        String errorMessage = responseUtil.getErrorMessage(UNAUTHORIZED_MESSAGE);
-        Map<String, Object> errorResponse = responseUtil.buildErrorResponseMap(errorMessage);
+        String errorMessage = messageSourceService.getString(UNAUTHORIZED_MESSAGE);
+        Map<String, Object> errorResponse = errorResponseUtil.buildErrorResponseMap(errorMessage);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(CONTENT_TYPE_JSON);
 

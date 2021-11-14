@@ -3,6 +3,7 @@ package com.explosion204.wclookup.service.dto.identifiable;
 import com.explosion204.wclookup.model.entity.Ticket;
 import com.explosion204.wclookup.service.validation.annotation.DtoClass;
 import com.explosion204.wclookup.service.validation.annotation.IdentifiableDtoConstraint;
+import com.explosion204.wclookup.service.validation.annotation.Nullable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class TicketDto extends IdentifiableDto {
     @Email
     private String email;
 
+    @Nullable
     private LocalDateTime creationTime;
     private boolean resolved;
 
@@ -45,6 +47,7 @@ public class TicketDto extends IdentifiableDto {
     public static TicketDto fromTicket(Ticket ticket) {
         TicketDto ticketDto = new TicketDto();
 
+        ticketDto.id = ticket.getId();
         ticketDto.subject = ticket.getSubject();
         ticketDto.text = ticket.getText();
         ticketDto.email = ticket.getEmail();
