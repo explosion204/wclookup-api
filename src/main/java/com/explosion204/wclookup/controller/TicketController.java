@@ -57,6 +57,7 @@ public class TicketController {
     }
 
     @PostMapping("/{id}/resolve")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> resolveTicket(@RequestBody TicketReplyDto replyDto, @PathVariable("id") long id) {
         ticketService.resolve(replyDto, id);
         return new ResponseEntity<>(NO_CONTENT);

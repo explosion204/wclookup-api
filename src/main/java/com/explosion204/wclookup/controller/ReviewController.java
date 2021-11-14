@@ -1,6 +1,7 @@
 package com.explosion204.wclookup.controller;
 
 import com.explosion204.wclookup.service.ReviewService;
+import com.explosion204.wclookup.service.dto.ReviewFilterDto;
 import com.explosion204.wclookup.service.dto.identifiable.ReviewDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,16 +32,14 @@ public class ReviewController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #toiletId ne null")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or #filterDto.toiletId ne null and #filterDto.hours eq null")
     public ResponseEntity<PaginationModel<ReviewDto>> getReviews(
-            @RequestParam(required = false) Long toiletId,
+            @ModelAttribute ReviewFilterDto filterDto,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer pageSize
     ) {
         PageContext pageContext = PageContext.of(page, pageSize);
-        PaginationModel<ReviewDto> reviews = toiletId != null
-                ? reviewService.findByToiletId(toiletId, pageContext)
-                : reviewService.findAll(pageContext);
+        PaginationModel<ReviewDto> reviews = reviewService.find(filterDto, pageContext);
 
         return new ResponseEntity<>(reviews, OK);
     }

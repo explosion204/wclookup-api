@@ -6,9 +6,11 @@ import com.explosion204.wclookup.model.entity.Review;
 import com.explosion204.wclookup.model.entity.Toilet;
 import com.explosion204.wclookup.model.entity.User;
 import com.explosion204.wclookup.model.repository.ReviewRepository;
+import com.explosion204.wclookup.model.repository.ReviewSpecificationBuilder;
 import com.explosion204.wclookup.model.repository.ToiletRepository;
 import com.explosion204.wclookup.model.repository.UserRepository;
 import com.explosion204.wclookup.security.util.AuthUtil;
+import com.explosion204.wclookup.service.dto.ReviewFilterDto;
 import com.explosion204.wclookup.service.dto.identifiable.ReviewDto;
 import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
@@ -16,6 +18,7 @@ import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -43,21 +46,18 @@ public class ReviewService {
         this.authUtil = authUtil;
     }
 
-    public PaginationModel<ReviewDto> findAll(PageContext pageContext) {
+    @ValidateDto
+    public PaginationModel<ReviewDto> find(ReviewFilterDto filterDto, PageContext pageContext) {
         PageRequest pageRequest = pageContext.toPageRequest();
-        Page<ReviewDto> page = reviewRepository.findAll(pageRequest)
-                .map(ReviewDto::fromReview);
-        return PaginationModel.fromPage(page);
-    }
+        LocalDateTime targetTime = filterDto.getHours() != null
+                ? LocalDateTime.now(UTC).minusHours(filterDto.getHours())
+                : null;
+        Specification<Review> specification = new ReviewSpecificationBuilder()
+                .byToiletId(filterDto.getToiletId())
+                .byCreationTimeAfter(targetTime)
+                .build();
 
-    public PaginationModel<ReviewDto> findByToiletId(long toiletId, PageContext pageContext) {
-        PageRequest pageRequest = pageContext.toPageRequest();
-
-        if (toiletRepository.findById(toiletId).isEmpty()) {
-            throw new EntityNotFoundException(Toilet.class);
-        }
-
-        Page<ReviewDto> page = reviewRepository.findByToiletId(toiletId, pageRequest)
+        Page<ReviewDto> page = reviewRepository.findAll(specification, pageRequest)
                 .map(ReviewDto::fromReview);
         return PaginationModel.fromPage(page);
     }
