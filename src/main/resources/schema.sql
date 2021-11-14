@@ -32,6 +32,7 @@ CREATE TABLE review (
     toilet_id BIGINT NOT NULL,
     rating DECIMAL(4, 3) NOT NULL,
     text VARCHAR(140),
+    creation_time TIMESTAMP NOT NULL,
 
     CONSTRAINT review_to_user_fk FOREIGN KEY (user_id) REFERENCES app_user (id) ON DELETE CASCADE,
     CONSTRAINT review_to_toilet_fk FOREIGN KEY (toilet_id) REFERENCES toilet (id) ON DELETE CASCADE

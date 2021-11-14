@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -28,7 +29,5 @@ public class Review {
 
     private double rating;
     private String text;
-
-    // TODO: 11/14/2021 creation time
-    // TODO: 11/14/2021 update time
+    private LocalDateTime creationTime;
 }

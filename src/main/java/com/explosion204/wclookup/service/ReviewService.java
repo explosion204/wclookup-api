@@ -19,7 +19,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
+import static java.time.ZoneOffset.UTC;
 
 @Service
 public class ReviewService {
@@ -78,6 +81,8 @@ public class ReviewService {
             throw new EntityAlreadyExistsException(Review.class);
         }
 
+        LocalDateTime creationTime = LocalDateTime.now(UTC);
+        review.setCreationTime(creationTime);
         review.setToilet(toilet);
         review.setUser(user);
         Review savedReview = reviewRepository.save(review);
