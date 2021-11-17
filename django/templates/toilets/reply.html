@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>wclookup</title>
+    <link rel="stylesheet" href="/static/css/base.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/toilets.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/reoly.css" type="text/css">
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <div class="header-flex">
+            <div class="header-start">
+                <img src="/static/images/M.png" alt="404"/>
+                <a href="news.html" class="app-name">wclookup</a>
+            </div>
+            <div class="header-end">
+                <button onclick=reviews_page('{% url 'toilets'  %}')>Туалеты</button>
+                <button onclick=reviews_page('{% url 'tickets'  %}')>Обращения</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="center-this-shit">
+        <div class="colum-info-block">
+            <h1>
+                Обращение, кста
+            </h1>
+            <div class="input-block">
+                <label> Текст обращения </label>
+                <span class="box">
+                    {{ ticket.text }}
+                </span>
+            </div>
+            <div class="input-block">
+                <label> Ответ, кста </label>
+                <input type="text" name="quantity" id="elem1">
+            </div>
+            <button onclick="send_reply({{ticket.ticket_id}})">
+                Отправить
+            </button >
+        </div>
+    </main>
+</div>
+<div class="pre-footer-and-footer">
+    <footer>
+        <div class="footer-flex">
+            <!--    <address>-->
+            <!--      If you see any bugs, please <a href="https://youtu.be/dQw4w9WgXcQ" class="footer-contact">contact me</a>.<br>-->
+            <!--    </address>-->
+            <h6>
+                Toilet paper team 2021
+            </h6>
+        </div>
+    </footer>
+</div>
+<script>
+        function reviews_page(href_url) {
+            location.href = href_url;
+        }
+
+        async function send_reply(id) {
+            var val = document.getElementById('elem1').value;
+            const name = 'accessToken';
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                head = parts.pop().split(';').shift();
+            }
+            cock_and_ball = 'https://wclookup.online/api/tickets/' + id + '/resolve';
+            const response = await fetch(cock_and_ball,{
+                method: "POST",
+                headers: {"Access-Token" : head, 'Access-Control-Allow-Origin' : 'https://wclookup.online', 'Access-Control-Allow-Methods' : 'POST'},
+                body: JSON.stringify({
+                "reply": "val"
+                })
+            });
+            {#document.location.reload();#}
+        }
+
+</script>
+</body>
+</html>

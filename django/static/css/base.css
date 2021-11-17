@@ -1,0 +1,215 @@
+* {
+    box-sizing: border-box;
+}
+
+html{
+    height: 100%;
+}
+
+:root {
+    --main-color: #ffffff;
+    --header-color: #1176D5;
+    --footer-color: #1176D5;
+    --button-hover-color: #0A4C88;
+    --header-text-color: #ffffff;
+    --button-color: #1176D5;
+}
+
+body{
+    background: var(--main-color);
+    margin: 0;
+    height: 100%;
+}
+
+/*header block*/
+
+header {
+    /*justify-content: space-around;*/
+    background: var(--header-color);
+    padding: 0;
+    margin: 0;
+}
+
+.header-flex {
+    display: flex;
+    margin: 0 auto;
+    width: 65%;
+}
+
+header a {
+    padding: 10px 30px;
+    text-decoration: none;
+    color: #FFFFFF;
+    transition: background-color 0.5s;
+    font-family: 'Lato', sans-serif;
+    cursor: default;
+}
+
+.header-start{
+    margin: auto;
+    justify-content: flex-start;
+}
+
+
+.app-name {
+    padding: 0;
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--header-text-color);
+}
+
+header img{
+    height: 1.8em;
+    margin-right: 8px;
+}
+
+
+.header-end {
+    margin: 0 auto;
+    padding: 0;
+    justify-content: flex-end;
+
+}
+
+.header-end a {
+    margin: 0;
+    padding: 10px 1px;
+}
+
+.top-user{
+    cursor: pointer;
+    color: var(--header-text-color);
+}
+
+.top-user:hover{
+    transition: 0.5s;
+    color: white;
+}
+
+/*nav block*/
+nav {
+    display: flex;
+    justify-content: space-between;
+    /*justify-content: space-around;*/
+    background-color: var(--nav-color);
+    height: 20px;
+    margin: 0;
+}
+
+.nav-flex{
+    display: flex;
+    justify-content: space-between;
+    margin-left: auto;
+    margin-right: auto;
+    width: 65%;
+}
+
+.nav-start {
+    display: flex;
+    justify-content: flex-start;
+
+}
+
+.nav-end {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 150px;
+}
+
+
+nav a {
+    font-size: 10px;
+    padding: 5px 20px;
+    text-decoration: none;
+    color: #FFFFFF;
+    transition: background-color 0.5s;
+    font-family: 'Lato', sans-serif;
+}
+
+nav a:hover {
+    background-color: var(--button-hover-color);
+    height: 20px;
+}
+
+/*main block*/
+
+.center-this-shit{
+    margin-left: auto;
+    margin-right: auto;
+    width: 65%;
+}
+
+/*footer block*/
+.pre-footer-and-footer{
+    height: 25px;
+    margin-top: -25px;
+}
+
+
+
+footer {
+    padding: 0;
+    margin: 0 auto;
+    background-color: var(--footer-color);
+    color: #ffffff;
+    font-family: 'Lato', sans-serif;
+
+}
+
+
+.footer-flex {
+    justify-content: center;
+    margin: 0 auto;
+    width: 65%;
+}
+
+footer h6{
+    padding: 10px 0;
+    margin: 0;
+    text-align: center
+}
+
+
+/*.footer address{*/
+/*    display: flex;*/
+/*    justify-content: start;*/
+/*    color: #ffffff;*/
+/*}*/
+
+
+/*some shit block*/
+
+button {
+    background-color: var(--button-color);
+    height: 30px;
+    border: 1px solid #FFFFFF;
+    border-radius: 5px;
+    color: #FFFFFF;
+    transition: 0.5s;
+    margin: 2px;
+    width: 90px;
+    font-size: 10px;
+}
+
+button a{
+    justify-content: center;
+    font-size: 10px;
+}
+
+
+button:hover{
+    background-color: var(--button-hover-color);
+    border-color: black;
+    color: black;
+    box-shadow: 0 0 3pt 2pt #8A2BE2;
+}
+
+button:active, .upload-button:focus{
+    outline: 0;
+}
+
+.wrapper{
+    min-height: 99.2%;
+    padding-bottom: 15px;
+}

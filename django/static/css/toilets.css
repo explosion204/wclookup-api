@@ -1,0 +1,95 @@
+* {
+    box-sizing: border-box;
+}
+
+html{
+    height: 100%;
+}
+
+:root {
+    --main-color: #ffffff;
+    --header-color: #1176D5;
+    --footer-color: #1176D5;
+    --button-hover-color: #0A4C88;
+    --header-text-color: #ffffff;
+    --button-color: #1176D5;
+}
+
+.flex-for-info{
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+}
+
+.flex-for-info-start{
+    display: flex;
+    justify-content: space-around;
+    margin: 5px 0 0 0;
+    border: 1px black solid;
+    border-radius: 5px;
+    width: 700px;
+}
+
+.flex-for-info-start span{
+    margin: auto;
+    font-size: 13px;
+    width: 16%;
+    word-break:break-all;
+}
+
+
+.flex-for-info-end{
+    display: flex;
+    justify-content: space-around;
+    margin: auto 0;
+    width: auto;
+}
+
+.flex-for-info-end span{
+    width: 376px;
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.info-headers{
+    display: flex;
+    justify-content: space-around;
+    margin: 5px 0 0 0;
+    border: 1px white solid;
+    border-radius: 5px;
+    width: 700px;
+
+}
+
+.info-headers span{
+    margin: auto;
+    font-size: 13px;
+    width: 16%;
+    word-break:break-all;
+}
+
+.info-align{
+    display: flex;
+    justify-content: space-around;
+    margin: auto 0;
+    width: auto;
+}
+
+/*.confirmed button {*/
+/*    color: chocolate;*/
+/*    background-color: #0A4C88;*/
+/*    opacity: 0.6;*/
+/*    cursor: not-allowed;*/
+/*}*/
+
+/*.confirmed{*/
+/*        color: chocolate;*/
+/*    background-color: #0A4C88;*/
+/*    opacity: 0.6;*/
+/*    cursor: not-allowed;*/
+/*}*/
+

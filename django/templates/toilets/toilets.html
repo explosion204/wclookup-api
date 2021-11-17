@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>wclookup</title>
+    <link rel="stylesheet" href="/static/css/base.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/toilets.css" type="text/css">
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <div class="header-flex">
+            <div class="header-start">
+                <img src="/static/images/M.png" alt="404"/>
+                <a href="news.html" class="app-name">wclookup</a>
+            </div>
+            <div class="header-end">
+                <button onclick=reviews_page('{% url 'toilets'  %}')>Туалеты</button>
+                <button onclick=reviews_page('{% url 'tickets'  %}')>Обращения</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="center-this-shit">
+        <h1>
+            Толчки, кста
+        </h1>
+        <div class="colum-info">
+            <div class="flex-for-info">
+                <div class="info-headers">
+                    <span>Идентификатор</span>
+                    <span>Адрес</span>
+                    <span>График работы</span>
+                    <span>Широта</span>
+                    <span>Долгота</span>
+                    <span>Рейтинг</span>
+                </div>
+                <div class="flex-for-info-end">
+                    <span>Та самая нейронка</span>
+                </div>
+            </div>
+            {% for toilet in toilet_list %}
+                <div class="flex-for-info">
+                    <div class="flex-for-info-start">
+                        <span>{{toilet.toilet_id}}и</span>
+                        <span>{{toilet.address}}</span>
+                        <span>{{toilet.serving}}</span>
+                        <span>{{toilet.latitude}}</span>
+                        <span>{{toilet.longitude}}</span>
+                        <span>{{toilet.rating}}</span>
+                    </div>
+                    <div class="flex-for-info-end">
+                        <button name="delete" onclick="delete_toilet({{toilet.toilet_id}})" >Удалить</button>
+                        <button onclick=reviews_page('{% url 'edit' value=toilet.toilet_id %}')>Изменить</button>
+                        <button onclick=reviews_page('{% url 'reviews' value=toilet.toilet_id %}'); name="id" value={{toilet.toilet_id}}>Отзывы</button>
+                        {% if toilet.isConfirmed %}
+                            <button style="cursor: not-allowed; opacity: 0.6;">Подтверждено</button>
+                        {% else %}
+                            <button name="confirm" onclick="confirm_toilet({{toilet.toilet_id}})">Подтвердить</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+<div class="pre-footer-and-footer">
+    <footer>
+        <div class="footer-flex">
+            <!--    <address>-->
+            <!--      If you see any bugs, please <a href="https://youtu.be/dQw4w9WgXcQ" class="footer-contact">contact me</a>.<br>-->
+            <!--    </address>-->
+            <h6>
+                Toilet paper team 2021
+            </h6>
+        </div>
+    </footer>
+</div>
+
+<script>
+    async function delete_toilet(id) {
+        const name = 'accessToken';
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            head = parts.pop().split(';').shift();
+        }
+        cock_and_ball = 'https://wclookup.online/api/toilets/' + id + '/';
+        const response = await fetch(cock_and_ball,{
+            method: "DELETE",
+            headers: {"Access-Token" : head, 'Access-Control-Allow-Origin' : 'https://wclookup.online', 'Access-Control-Allow-Methods' : 'DELETE'},
+        });
+        document.location.reload();
+    }
+
+    async function confirm_toilet(id) {
+        const name = 'accessToken';
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            head = parts.pop().split(';').shift();
+        }
+        cock_and_ball = 'https://wclookup.online/api/toilets/' + id + '/';
+        const response = await fetch(cock_and_ball,{
+            method: "PATCH",
+            headers: {"Access-Token" : head, 'Access-Control-Allow-Origin' : 'https://wclookup.online', 'Access-Control-Allow-Methods' : 'PATCH', "Content-Type" : 'application/json'},
+            body: JSON.stringify({
+                "confirmed": true
+            })
+        });
+        document.location.reload();
+    }
+
+    function reviews_page(href_url){
+    location.href=href_url;
+}
+
+</script>
+
+</body>
+</html>
