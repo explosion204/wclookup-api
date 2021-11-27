@@ -43,9 +43,8 @@ public class ToiletController {
     ) {
         PageContext pageContext = PageContext.of(page, pageSize);
         // admin can load get all toilets, even not confirmed
-        PaginationModel<ToiletDto> toilets = authUtil.hasAuthority(ADMIN.getAuthority())
-                ? toiletService.findAll(pageContext)
-                : toiletService.findByParams(toiletFilterDto, pageContext);
+        boolean confirmed = authUtil.hasAuthority(ADMIN.getAuthority());
+        PaginationModel<ToiletDto> toilets = toiletService.find(toiletFilterDto, confirmed, pageContext);
         return new ResponseEntity<>(toilets, OK);
     }
 
