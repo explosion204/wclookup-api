@@ -5,11 +5,11 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
 
-public class ReviewSpecificationBuilder {
-    private static final String ID = "id";
-    private static final String TOILET = "toilet";
-    private static final String CREATION_TIME = "creationTime";
+import static com.explosion204.wclookup.model.repository.FieldName.CREATION_TIME;
+import static com.explosion204.wclookup.model.repository.FieldName.ID;
+import static com.explosion204.wclookup.model.repository.FieldName.TOILET;
 
+public class ReviewSpecificationBuilder {
     private Specification<Review> composedSpecification;
 
     public ReviewSpecificationBuilder() {

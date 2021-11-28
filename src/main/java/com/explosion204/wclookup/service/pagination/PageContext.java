@@ -2,6 +2,7 @@ package com.explosion204.wclookup.service.pagination;
 
 import com.explosion204.wclookup.exception.InvalidPageContextException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import static com.explosion204.wclookup.exception.InvalidPageContextException.ErrorType.INVALID_PAGE_NUMBER;
 import static com.explosion204.wclookup.exception.InvalidPageContextException.ErrorType.INVALID_PAGE_SIZE;
@@ -42,6 +43,10 @@ public class PageContext {
     }
 
     public PageRequest toPageRequest() {
-        return PageRequest.of(page - 1, pageSize);
+        return toPageRequest(Sort.unsorted());
+    }
+
+    public PageRequest toPageRequest(Sort sort) {
+        return PageRequest.of(page - 1, pageSize, sort);
     }
 }

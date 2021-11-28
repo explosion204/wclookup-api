@@ -18,12 +18,14 @@ import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static com.explosion204.wclookup.model.repository.FieldName.CREATION_TIME;
 import static com.explosion204.wclookup.security.ApplicationAuthority.ADMIN;
 import static java.time.ZoneOffset.UTC;
 
@@ -48,7 +50,6 @@ public class ReviewService {
 
     @ValidateDto
     public PaginationModel<ReviewDto> find(ReviewFilterDto filterDto, PageContext pageContext) {
-        PageRequest pageRequest = pageContext.toPageRequest();
         LocalDateTime targetTime = filterDto.getHours() != null
                 ? LocalDateTime.now(UTC).minusHours(filterDto.getHours())
                 : null;
@@ -56,7 +57,9 @@ public class ReviewService {
                 .byToiletId(filterDto.getToiletId())
                 .byCreationTimeAfter(targetTime)
                 .build();
+        Sort creationTimeAscSort = Sort.by(Sort.Direction.DESC, CREATION_TIME);
 
+        PageRequest pageRequest = pageContext.toPageRequest(creationTimeAscSort);
         Page<ReviewDto> page = reviewRepository.findAll(specification, pageRequest)
                 .map(ReviewDto::fromReview);
         return PaginationModel.fromPage(page);
