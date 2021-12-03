@@ -52,6 +52,7 @@ public class TicketDto extends IdentifiableDto {
         ticketDto.text = ticket.getText();
         ticketDto.email = ticket.getEmail();
         ticketDto.resolved = ticket.isResolved();
+        ticketDto.creationTime = ticket.getCreationTime();
 
         return ticketDto;
     }
