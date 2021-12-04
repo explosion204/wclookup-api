@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wclookup.core.constant.NameConstant
 import com.example.wclookup.core.exception.AccessTokenException
+import com.example.wclookup.core.exception.RefreshTokenException
 import com.example.wclookup.core.model.AuthResponse
 import com.example.wclookup.core.service.AuthService
 import com.example.wclookup.core.validation.AccessTokenValidator
@@ -25,7 +26,7 @@ class AuthViewModel @Inject constructor(
 
                 val authResponse: AuthResponse = try {
                     authService.refresh(refreshToken)
-                } catch (e: AccessTokenException) {
+                } catch (e: RefreshTokenException) {
                     authService.authenticate(idToken)
                 }
 

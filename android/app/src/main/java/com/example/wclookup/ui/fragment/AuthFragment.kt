@@ -25,6 +25,7 @@ import javax.inject.Inject
 class AuthFragment : DaggerFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
     private val authViewModel: AuthViewModel by activityViewModels {
         viewModelFactory
     }
@@ -48,12 +49,12 @@ class AuthFragment : DaggerFragment() {
 
         val account = GoogleSignIn.getLastSignedInAccount(requireContext())
         if (account != null) {
-            authViewModel.authenticate(account.id!!)
+            authViewModel.authenticate(account.idToken!!)
             replaceFragment()
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestId()
+            .requestIdToken(getString(R.string.server_client_id))
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
     }
@@ -67,11 +68,14 @@ class AuthFragment : DaggerFragment() {
                 try {
                     val account = task.getResult(ApiException::class.java)
                     if (account != null) {
-                        authViewModel.authenticate(account.id!!)
+                        authViewModel.authenticate(account.idToken!!)
                         replaceFragment()
                     }
                 } catch (e: ApiException) {
-                    Toast.makeText(requireContext(), resources.getString(R.string.sign_in_failed), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        resources.getString(R.string.sign_in_failed),
+                        Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
                 }
             }
