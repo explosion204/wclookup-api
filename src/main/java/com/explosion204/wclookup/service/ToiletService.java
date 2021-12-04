@@ -23,7 +23,7 @@ public class ToiletService {
     }
 
     @ValidateDto
-    public PaginationModel<ToiletDto> find(ToiletFilterDto toiletFilterDto, boolean confirmed, PageContext pageContext) {
+    public PaginationModel<ToiletDto> find(ToiletFilterDto toiletFilterDto, boolean onlyConfirmed, PageContext pageContext) {
         Page<Toilet> toiletPage;
         PageRequest pageRequest = pageContext.toPageRequest();
 
@@ -32,17 +32,17 @@ public class ToiletService {
             double longitude = toiletFilterDto.getLongitude();
             double radius = toiletFilterDto.getRadius();
 
-            toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, confirmed, pageRequest);
+            toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, onlyConfirmed, pageRequest);
         } else {
-            toiletPage = toiletRepository.findAll(confirmed, pageRequest);
+            toiletPage = toiletRepository.findAll(onlyConfirmed, pageRequest);
         }
 
         Page<ToiletDto> dtoPage = toiletPage.map(ToiletDto::fromToilet);
         return PaginationModel.fromPage(dtoPage);
     }
 
-    public ToiletDto findById(long id, boolean requireConfirmed) {
-        Optional<Toilet> result = requireConfirmed
+    public ToiletDto findById(long id, boolean onlyConfirmed) {
+        Optional<Toilet> result = onlyConfirmed
                 ? toiletRepository.findByIdConfirmed(id)
                 : toiletRepository.findById(id);
         Toilet toilet = result.orElseThrow(() -> new EntityNotFoundException(Toilet.class));

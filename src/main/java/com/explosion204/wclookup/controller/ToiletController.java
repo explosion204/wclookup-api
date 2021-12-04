@@ -43,16 +43,16 @@ public class ToiletController {
     ) {
         PageContext pageContext = PageContext.of(page, pageSize);
         // admin can load get all toilets, even not confirmed
-        boolean confirmed = authUtil.hasAuthority(ADMIN.getAuthority());
-        PaginationModel<ToiletDto> toilets = toiletService.find(toiletFilterDto, confirmed, pageContext);
+        boolean onlyConfirmed = !authUtil.hasAuthority(ADMIN.getAuthority());
+        PaginationModel<ToiletDto> toilets = toiletService.find(toiletFilterDto, onlyConfirmed, pageContext);
         return new ResponseEntity<>(toilets, OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ToiletDto> getToilet(@PathVariable("id") long id) {
         // admin can view not confirmed toilets
-        boolean requireConfirmed = !authUtil.hasAuthority(ADMIN.getAuthority());
-        ToiletDto toiletDto = toiletService.findById(id, requireConfirmed);
+        boolean onlyConfirmed = !authUtil.hasAuthority(ADMIN.getAuthority());
+        ToiletDto toiletDto = toiletService.findById(id, onlyConfirmed);
 
         return new ResponseEntity<>(toiletDto, OK);
     }
