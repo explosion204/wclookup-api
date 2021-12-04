@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ToiletFilterDto {
     private Double latitude;
     private Double longitude;
-    private Integer radius;
+    private Double radius;
 
     public boolean hasNoNullAttributes() {
         return latitude != null && longitude != null && radius != null;

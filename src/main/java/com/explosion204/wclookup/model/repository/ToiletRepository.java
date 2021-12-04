@@ -26,7 +26,7 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
     Page<Toilet> findByRadius(
             @Param("latitude") double latitude,
             @Param("longitude") double longitude,
-            @Param("radius") int radius,
+            @Param("radius") double radius,
             @Param("confirmed") boolean confirmed,
             Pageable pageable
     );

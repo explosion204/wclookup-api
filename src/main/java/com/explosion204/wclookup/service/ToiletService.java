@@ -30,7 +30,7 @@ public class ToiletService {
         if (toiletFilterDto.hasNoNullAttributes()) {
             double latitude = toiletFilterDto.getLatitude();
             double longitude = toiletFilterDto.getLongitude();
-            int radius = toiletFilterDto.getRadius();
+            double radius = toiletFilterDto.getRadius();
 
             toiletPage = toiletRepository.findByRadius(latitude, longitude, radius, confirmed, pageRequest);
         } else {
