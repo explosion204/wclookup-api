@@ -22,8 +22,8 @@ public class ReviewDto extends IdentifiableDto {
     private long userId;
     private long toiletId;
 
-    @DecimalMin("0.0")
-    @DecimalMax("180.0")
+    @DecimalMin("1.0")
+    @DecimalMax("5.0")
     private Double rating;
 
     @Size(min = 1, max = 140)
