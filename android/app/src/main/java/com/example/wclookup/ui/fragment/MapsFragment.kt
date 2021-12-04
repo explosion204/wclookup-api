@@ -37,6 +37,7 @@ import javax.inject.Inject
 class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
     private val mapsViewModel: MapsViewModel by activityViewModels {
         viewModelFactory
     }
