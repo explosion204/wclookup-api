@@ -13,6 +13,5 @@ data class ApiResponse<T>(
     @SerializedName(PAGE_NUMBER) val pageNumber: Int,
     @SerializedName(PAGE_SIZE) val pageSize: Int,
     @SerializedName(TOTAL_PAGES) val totalPages: String,
-    @SerializedName(TOTAL_ENTITIES) val totalEntities: String,
-    @SerializedName(ERROR_MESSAGE) val errorMessage: String,
+    @SerializedName(TOTAL_ENTITIES) val totalEntities: String
 )

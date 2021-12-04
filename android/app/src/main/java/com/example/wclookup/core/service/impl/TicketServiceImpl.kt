@@ -10,17 +10,17 @@ import com.google.gson.reflect.TypeToken
 
 class TicketServiceImpl : TicketService {
     override suspend fun create(accessToken: String, ticket: Ticket): Ticket {
-        val apiResponse: ApiResponse<Ticket> = NetworkService.instance
+        val apiResponse = NetworkService.instance
             .getTicketApi()
             .create(accessToken, ticket)
 
-        if (apiResponse.errorMessage.isNotEmpty()) {
+        if (!apiResponse.isSuccessful) {
             throw AccessTokenException()
         }
 
         val gson = GsonBuilder().create()
         val typeToken = object : TypeToken<Ticket>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
     }
 
 }

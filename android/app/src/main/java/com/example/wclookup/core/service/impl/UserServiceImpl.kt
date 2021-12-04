@@ -10,30 +10,30 @@ import com.google.gson.reflect.TypeToken
 
 class UserServiceImpl : UserService {
     override suspend fun getById(accessToken: String, id: Long): User {
-        val apiResponse: ApiResponse<User> = NetworkService.instance
+        val apiResponse = NetworkService.instance
             .getUserApi()
             .getById(accessToken, id)
 
-        if (apiResponse.errorMessage.isNotEmpty()) {
+        if (!apiResponse.isSuccessful) {
             throw AccessTokenException()
         }
 
         val gson = GsonBuilder().create()
         val typeToken = object : TypeToken<User>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
     }
 
     override suspend fun update(accessToken: String, id: Long, user: User): User {
-        val apiResponse: ApiResponse<User> = NetworkService.instance
+        val apiResponse = NetworkService.instance
             .getUserApi()
             .update(accessToken, id, user)
 
-        if (apiResponse.errorMessage.isNotEmpty()) {
+        if (!apiResponse.isSuccessful) {
             throw AccessTokenException()
         }
 
         val gson = GsonBuilder().create()
         val typeToken = object : TypeToken<User>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
     }
 }

@@ -1,7 +1,9 @@
 package com.example.wclookup.core.network.api
 
 import com.example.wclookup.core.model.ApiResponse
+import com.example.wclookup.core.model.Review
 import com.example.wclookup.core.model.Toilet
+import retrofit2.Response
 import retrofit2.http.*
 
 interface WclookupToiletApi {
@@ -13,17 +15,17 @@ interface WclookupToiletApi {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
         @Query("radius") radius: Double
-    ): ApiResponse<Toilet>
+    ): Response<ApiResponse<Toilet>>
 
     @GET("/api/toilets/{id}")
     suspend fun getById(
         @Header("accessToken") accessToken: String,
         @Path("id") id: Long
-    ): ApiResponse<Toilet>
+    ): Response<ApiResponse<Toilet>>
 
     @POST("/api/toilets")
     suspend fun create(
         @Header("accessToken") accessToken: String,
         @Body toilet: Toilet
-    ): ApiResponse<Toilet>
+    ): Response<ApiResponse<Toilet>>
 }
