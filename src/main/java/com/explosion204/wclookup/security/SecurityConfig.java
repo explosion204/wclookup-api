@@ -12,10 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.OPTIONS;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final String ALL_ENDPOINTS = "/api/**";
     private static final String AUTH_ENDPOINTS = "/api/auth/**";
 
     private final AuthenticationProvider authenticationProvider;
@@ -29,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(AUTH_ENDPOINTS);
+        web.ignoring().antMatchers(AUTH_ENDPOINTS)
+                .antMatchers(OPTIONS, ALL_ENDPOINTS);
     }
 
     @Override
@@ -51,4 +55,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(authenticationProvider);
     }
+
+
 }
