@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class PaginationModel<T extends IdentifiableDto> {
     private List<T> data;
-    private int pageNumber;
+    private int page;
     private int pageSize;
     private int totalPages;
     private long totalEntities;
@@ -18,7 +18,7 @@ public class PaginationModel<T extends IdentifiableDto> {
         PaginationModel<T> paginationModel = new PaginationModel<>();
 
         paginationModel.data = page.getContent();
-        paginationModel.pageNumber = page.getNumber() + 1; // zero based
+        paginationModel.page = page.getNumber() + 1; // zero based
         paginationModel.pageSize = page.getSize();
         paginationModel.totalPages = page.getTotalPages();
         paginationModel.totalEntities = page.getTotalElements();
