@@ -25,12 +25,15 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.time.ZoneOffset.UTC;
 
 @Service
 public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static final Pattern emailPattern = Pattern.compile("(.+)@.+");
     private static final String USER_ID_CLAIM = "user_id";
 
     @Value("${refresh.validity_time}")
@@ -49,8 +52,9 @@ public class AuthService {
             .orElseThrow(() -> new BadCredentialsException(StringUtils.EMPTY));
         GoogleIdToken.Payload payload = googleIdToken.getPayload();
         String googleId = payload.getSubject();
+        String email = payload.getEmail();
         User user = userRepository.findByGoogleId(googleId)
-                .orElseGet(() -> createUser(googleId));
+                .orElseGet(() -> createUser(googleId, email));
 
         return buildAuthDto(user);
     }
@@ -101,13 +105,23 @@ public class AuthService {
         return Optional.ofNullable(idToken);
     }
 
-    private User createUser(String googleId) {
+    private User createUser(String googleId, String email) {
         User newUser = new User();
 
         newUser.setGoogleId(googleId);
-        newUser.setNickname(StringUtils.EMPTY);
+        newUser.setNickname(createNickname(email));
         newUser.setAdmin(false);
 
         return userRepository.save(newUser);
+    }
+
+    private String createNickname(String email) {
+        Matcher matcher = emailPattern.matcher(email);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return StringUtils.EMPTY;
     }
 }
