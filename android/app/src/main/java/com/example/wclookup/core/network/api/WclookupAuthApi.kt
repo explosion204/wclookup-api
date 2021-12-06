@@ -8,7 +8,7 @@ import retrofit2.Response
 interface WclookupAuthApi {
     @POST("/api/auth/authenticate")
     suspend fun authenticate(
-        @Header("googleAccessToken") googleAccessToken: String
+        @Header("Google-Access-Token") googleAccessToken: String
     ): Response<AuthResponse>
 
     @POST("/api/auth/refresh")
