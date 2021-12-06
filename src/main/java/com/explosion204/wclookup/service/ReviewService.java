@@ -122,11 +122,13 @@ public class ReviewService {
     }
 
     private void checkAuthority(long ownerUserId) {
-         long currentUserId = authUtil.getAuthenticatedUserId();
+        long currentUserId = authUtil.getAuthenticatedUserId();
 
          // only review owner or admin can update/delete
-         if (!authUtil.hasAuthority(ADMIN.name()) && currentUserId != ownerUserId) {
-             throw new AccessDeniedException(StringUtils.EMPTY);
-         }
+        if (!authUtil.hasAuthority(ADMIN.getAuthority()) && currentUserId != ownerUserId) {
+            throw new AccessDeniedException(StringUtils.EMPTY);
+
+        }
+
     }
 }
