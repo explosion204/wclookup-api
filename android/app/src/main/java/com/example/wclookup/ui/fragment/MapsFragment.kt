@@ -37,18 +37,14 @@ import javax.inject.Inject
 class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
-
     private val mapsViewModel: MapsViewModel by activityViewModels {
         viewModelFactory
     }
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var googleMap: GoogleMap
-    private var currentLatitude: Double = 0.0
-    private var currentLongitude: Double = 0.0
-    private var radius: Double = 0.0
+    private lateinit var currentPosMarker: Marker
     private var isAdding: Boolean = false
-
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { map ->
@@ -56,14 +52,24 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
         googleMap = map
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationClient.lastLocation.addOnSuccessListener {
-            currentLatitude = it.latitude
-            currentLongitude = it.longitude
-            val coordinates = LatLng(currentLatitude, currentLongitude)
-            googleMap.addMarker(MarkerOptions().position(coordinates).title("My last position"))
+            mapsViewModel.currentLatitude = it.latitude
+            mapsViewModel.currentLongitude = it.longitude
+            val coordinates = LatLng(it.latitude, it.longitude)
+            currentPosMarker = googleMap.addMarker(
+                MarkerOptions().position(coordinates).title("My last position"))!!
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinates, 14F))
         }
         googleMap.setOnMapClickListener(this)
         googleMap.setOnMarkerClickListener(this)
+
+        mapsViewModel.toilets.observe(viewLifecycleOwner, { toilets ->
+            toilets.forEach {
+                val coordinates = LatLng(it.latitude, it.longitude)
+                googleMap.addMarker(MarkerOptions()
+                    .position(coordinates)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+            }
+        })
     }
 
     override fun onCreateView(
@@ -83,9 +89,10 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
 
         view.findViewById<FloatingActionButton>(R.id.fab_location).setOnClickListener {
             fusedLocationClient.lastLocation.addOnSuccessListener {
-                currentLatitude = it.latitude
-                currentLongitude = it.longitude
-                val coordinates = LatLng(currentLatitude, currentLongitude)
+                currentPosMarker.remove()
+                mapsViewModel.currentLatitude = it.latitude
+                mapsViewModel.currentLongitude = it.longitude
+                val coordinates = LatLng(it.latitude, it.longitude)
                 googleMap.addMarker(MarkerOptions().position(coordinates).title("My last position"))
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
             }
@@ -98,36 +105,6 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
         view.findViewById<FloatingActionButton>(R.id.fab_add).setOnClickListener {
             isAdding = true
             Toast.makeText(requireContext(), "Tap any point on map to add toilet", Toast.LENGTH_SHORT).show()
-        }
-
-        mapsViewModel.toiletsList.observe(viewLifecycleOwner, {
-            it.forEach { toilet ->
-                val coordinates = LatLng(toilet.latitude, toilet.longitude)
-                googleMap.addMarker(MarkerOptions()
-                    .position(coordinates)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-            }
-        })
-    }
-
-    fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                2
-            )
         }
     }
 
@@ -162,13 +139,15 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
         layout.addView(scheduleInput)
         builder.setView(layout)
 
-        builder.setPositiveButton("Add") { dialog, which ->
-            val toilet = Toilet(0, addressInput.text.toString(), scheduleInput.text.toString(),
-            latitude, longitude, 0.0, false)
+        builder.setPositiveButton("Add") { _, _ ->
+            val toilet = Toilet(
+                0, addressInput.text.toString(), scheduleInput.text.toString(),
+                latitude, longitude, 0.0
+            )
             mapsViewModel.addToilet(toilet)
-            mapsViewModel.searchInRadius(currentLatitude, currentLongitude, radius)
+            mapsViewModel.searchInRadius()
         }
-        builder.setNegativeButton("Cancel") { dialog, which ->
+        builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.cancel()
         }
 
@@ -184,26 +163,51 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
         input.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(input)
 
-        builder.setPositiveButton("OK") { dialog, which ->
+        builder.setPositiveButton("OK") { _, _ ->
             googleMap.clear()
-            val coordinates = LatLng(currentLatitude, currentLongitude)
+            val coordinates = LatLng(mapsViewModel.currentLatitude, mapsViewModel.currentLongitude)
             googleMap.addMarker(MarkerOptions().position(coordinates).title("My last position"))
 
             val radiusString = input.text.toString()
 
             try {
-                radius = radiusString.toDouble()
+                mapsViewModel.radius = radiusString.toDouble()
             } catch (e: NumberFormatException) {
-                Toast.makeText(requireContext(), "Invalid value, radius was set to default", Toast.LENGTH_SHORT).show()
-                radius = 0.1
+                Toast.makeText(
+                    requireContext(),
+                    "Invalid value, radius was set to default (100m)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                mapsViewModel.radius = 0.1
             }
 
-            mapsViewModel.searchInRadius(currentLatitude, currentLongitude, radius)
+            mapsViewModel.searchInRadius()
         }
-        builder.setNegativeButton("Cancel") { dialog, which ->
+        builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.cancel()
         }
 
         builder.show()
+    }
+
+    private fun checkPermissions() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                2
+            )
+        }
     }
 }
