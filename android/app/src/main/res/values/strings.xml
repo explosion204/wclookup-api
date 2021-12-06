@@ -1,8 +1,19 @@
 <resources>
-    <string name="app_name">wclookup</string>
-    <string name="title_activity_main">wclookup</string>
+    <string name="app_name">WcLookup</string>
+    <string name="title_activity_main">WcLookup</string>
     <string name="server_client_id">478259788814-1tcm0270rib4nic6tivv96q5mdsikdvg.apps.googleusercontent.com</string>
     <string name="sign_in_failed">Sign in failed</string>
     <string name="location">Current location</string>
     <string name="radius_search">Radius search</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">WcLookup</string>
+    <string name="nav_header_subtitle">Toilet paper team</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_map">Map</string>
+    <string name="menu_toilets">Toilets</string>
+    <string name="menu_auth">Auth</string>
+    <string name="menu_toilet">Toilet</string>
 </resources>
