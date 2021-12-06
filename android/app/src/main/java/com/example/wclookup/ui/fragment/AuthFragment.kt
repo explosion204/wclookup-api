@@ -6,9 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.wclookup.R
 import com.example.wclookup.ui.viewmodel.AuthViewModel
@@ -50,7 +47,9 @@ class AuthFragment : DaggerFragment() {
         val account = GoogleSignIn.getLastSignedInAccount(requireContext())
         if (account != null) {
             authViewModel.authenticate(account.idToken!!)
-            replaceFragment()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .remove(this)
+                .commit()
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -69,7 +68,10 @@ class AuthFragment : DaggerFragment() {
                     val account = task.getResult(ApiException::class.java)
                     if (account != null) {
                         authViewModel.authenticate(account.idToken!!)
-                        replaceFragment()
+                        authViewModel.authenticate(account.idToken!!)
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .remove(this)
+                            .commit()
                     }
                 } catch (e: ApiException) {
                     Toast.makeText(
@@ -80,11 +82,5 @@ class AuthFragment : DaggerFragment() {
                 }
             }
         }
-    }
-
-    private fun replaceFragment() {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, MapsFragment())
-            .commit()
     }
 }
