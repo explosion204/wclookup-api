@@ -6,13 +6,12 @@ import com.example.wclookup.core.model.AuthResponse
 import com.example.wclookup.core.network.NetworkService
 import com.example.wclookup.core.service.AuthService
 import com.google.gson.GsonBuilder
-import retrofit2.Response
 
 class AuthServiceImpl : AuthService {
-    override suspend fun authenticate(googleAccessToken: String): AuthResponse {
-        val authResponse: Response<AuthResponse> = NetworkService.instance
+    override suspend fun authenticate(idToken: String): AuthResponse {
+        val authResponse = NetworkService.instance
             .getAuthApi()
-            .authenticate(googleAccessToken)
+            .authenticate(idToken)
 
         if (!authResponse.isSuccessful) {
             throw AccessTokenException()
@@ -23,7 +22,7 @@ class AuthServiceImpl : AuthService {
     }
 
     override suspend fun refresh(refreshToken: String): AuthResponse {
-        val authResponse: Response<AuthResponse> = NetworkService.instance
+        val authResponse = NetworkService.instance
             .getAuthApi()
             .refresh(refreshToken)
 

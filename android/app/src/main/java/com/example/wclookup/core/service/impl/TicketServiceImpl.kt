@@ -1,7 +1,6 @@
 package com.example.wclookup.core.service.impl
 
 import com.example.wclookup.core.exception.AccessTokenException
-import com.example.wclookup.core.model.ApiResponse
 import com.example.wclookup.core.model.Ticket
 import com.example.wclookup.core.network.NetworkService
 import com.example.wclookup.core.service.TicketService
@@ -20,7 +19,7 @@ class TicketServiceImpl : TicketService {
 
         val gson = GsonBuilder().create()
         val typeToken = object : TypeToken<Ticket>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()), typeToken)
     }
 
 }

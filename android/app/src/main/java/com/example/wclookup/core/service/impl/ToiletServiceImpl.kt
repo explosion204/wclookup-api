@@ -1,7 +1,6 @@
 package com.example.wclookup.core.service.impl
 
 import com.example.wclookup.core.exception.AccessTokenException
-import com.example.wclookup.core.model.ApiResponse
 import com.example.wclookup.core.model.Toilet
 import com.example.wclookup.core.network.NetworkService
 import com.example.wclookup.core.network.api.WclookupToiletApi
@@ -11,7 +10,7 @@ import com.google.gson.reflect.TypeToken
 import java.util.*
 
 class ToiletServiceImpl : ToiletService {
-    val PAGE_SIZE = 100
+    private val MAX_PAGE_SIZE = 50
 
     override suspend fun getAll(
         accessToken: String,
@@ -25,26 +24,26 @@ class ToiletServiceImpl : ToiletService {
         var pageNumber = 1
 
         var apiResponse = toiletApi
-            .getAll(accessToken, pageNumber, PAGE_SIZE, latitude, longitude, radius)
+            .getAll(accessToken, pageNumber, MAX_PAGE_SIZE, latitude, longitude, radius)
 
         if (!apiResponse.isSuccessful) {
             throw AccessTokenException()
         }
 
         var typeToken = object : TypeToken<List<Toilet>>() {}.type
-        toilets.add(gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken))
+        toilets.addAll(gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken))
 
         while (toilets.size < apiResponse.body()?.totalEntities!!.toInt()) {
             pageNumber++
             apiResponse = toiletApi
-                .getAll(accessToken, pageNumber, PAGE_SIZE, latitude, longitude, radius)
+                .getAll(accessToken, pageNumber, MAX_PAGE_SIZE, latitude, longitude, radius)
 
             if (!apiResponse.isSuccessful) {
                 throw AccessTokenException()
             }
 
             typeToken = object : TypeToken<List<Toilet>>() {}.type
-            toilets.add(gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken))
+            toilets.addAll(gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken))
         }
         return toilets
     }
@@ -81,7 +80,7 @@ class ToiletServiceImpl : ToiletService {
 
         val gson = GsonBuilder().create()
         val typeToken = object : TypeToken<Toilet>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()), typeToken)
     }
 
     override suspend fun create(accessToken: String, toilet: Toilet): Toilet {
@@ -94,7 +93,6 @@ class ToiletServiceImpl : ToiletService {
         }
 
         val gson = GsonBuilder().create()
-        val typeToken = object : TypeToken<Toilet>() {}.type
-        return gson.fromJson(gson.toJson(apiResponse.body()?.data), typeToken)
+        return gson.fromJson(gson.toJson(apiResponse.body()), Toilet::class.java)
     }
 }
