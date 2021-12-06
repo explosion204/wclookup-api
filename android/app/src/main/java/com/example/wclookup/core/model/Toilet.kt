@@ -16,6 +16,5 @@ data class Toilet(
     @SerializedName(SCHEDULE) @Expose val schedule: String,
     @SerializedName(LATITUDE) @Expose val latitude: Double,
     @SerializedName(LONGITUDE) @Expose val longitude: Double,
-    @SerializedName(RATING) @Expose val rating: Double,
-    @SerializedName(CONFIRMED) @Expose val confirmed: Boolean
+    @SerializedName(RATING) @Expose val rating: Double
 )
