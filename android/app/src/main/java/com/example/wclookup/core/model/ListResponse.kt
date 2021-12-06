@@ -8,7 +8,7 @@ import com.example.wclookup.core.constant.NameConstant.TOTAL_ENTITIES
 import com.example.wclookup.core.constant.NameConstant.TOTAL_PAGES
 import com.google.gson.annotations.SerializedName
 
-data class ApiResponse<T>(
+data class ListResponse<T>(
     @SerializedName(DATA) val data: List<T>,
     @SerializedName(PAGE_NUMBER) val pageNumber: Int,
     @SerializedName(PAGE_SIZE) val pageSize: Int,
