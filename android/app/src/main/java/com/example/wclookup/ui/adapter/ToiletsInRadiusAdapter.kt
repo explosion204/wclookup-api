@@ -1,4 +1,4 @@
-package com.example.wclookup.ui.fragment
+package com.example.wclookup.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,8 +9,13 @@ import com.example.wclookup.databinding.FragmentToiletInRadiusBinding
 
 
 class ToiletsInRadiusAdapter(
-        private val toilets: MutableList<Toilet>
-    ): RecyclerView.Adapter<ToiletsInRadiusAdapter.ViewHolder>() {
+    private val toilets: List<Toilet>,
+    private val listener: OnItemClickListener
+): RecyclerView.Adapter<ToiletsInRadiusAdapter.ViewHolder>() {
+
+    interface OnItemClickListener {
+        fun onItemClick(toilet: Toilet)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(FragmentToiletInRadiusBinding
@@ -22,6 +27,9 @@ class ToiletsInRadiusAdapter(
         holder.addressView.text = toilet.address
         holder.scheduleView.text = toilet.schedule
         holder.ratingView.text = toilet.rating.toString()
+        holder.itemView.setOnClickListener {
+            listener.onItemClick(toilet)
+        }
     }
 
     override fun getItemCount(): Int = toilets.size
@@ -30,10 +38,6 @@ class ToiletsInRadiusAdapter(
         val addressView: TextView = binding.address
         val scheduleView: TextView = binding.schedule
         val ratingView: TextView = binding.rating
-
-        override fun toString(): String {
-            return super.toString() + " '" + addressView.text + "'"
-        }
     }
 
 }

@@ -16,17 +16,19 @@ class MapsViewModel @Inject constructor(
     private val preferences: SharedPreferences,
     private val authService: AuthService,
     private val toiletService: ToiletService
-) : ViewModel() {
+): ViewModel() {
 
-    val toiletsList: MutableLiveData<List<Toilet>> = MutableLiveData()
+    val toilets: MutableLiveData<List<Toilet>> = MutableLiveData()
+    var currentLatitude: Double = 0.0
+    var currentLongitude: Double = 0.0
+    var radius: Double = 0.0
 
-    fun searchInRadius(latitude: Double, longitude: Double, radius: Double) {
+    fun searchInRadius() {
         viewModelScope.launch {
             var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
             accessToken = validateAccessToken(accessToken)
 
-            toiletsList.postValue(
-                toiletService.getAll(accessToken, latitude, longitude, radius))
+            toilets.value = toiletService.getAll(accessToken, currentLatitude, currentLongitude, radius)
         }
     }
 
@@ -40,7 +42,7 @@ class MapsViewModel @Inject constructor(
     }
 
     private fun validateAccessToken(accessToken: String): String {
-        var newAccessToken: String = accessToken
+        var newAccessToken = accessToken
         viewModelScope.launch {
             if (!AccessTokenValidator.validateExpiryTime(accessToken)) {
                 val refreshToken = preferences.getString(NameConstant.REFRESH_TOKEN, "")!!
