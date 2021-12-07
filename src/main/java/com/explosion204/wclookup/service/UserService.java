@@ -9,6 +9,7 @@ import com.explosion204.wclookup.service.pagination.PaginationModel;
 import com.explosion204.wclookup.service.validation.annotation.ValidateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +30,13 @@ public class UserService {
     public UserDto findById(long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class));
+        return UserDto.fromUser(user);
+    }
+
+    public UserDto findCurrent() {
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
         return UserDto.fromUser(user);
     }
 
