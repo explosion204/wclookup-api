@@ -33,6 +33,8 @@ public interface ToiletRepository extends JpaRepository<Toilet, Long> {
             Pageable pageable
     );
 
+    Page<Toilet> findByLatitudeAndLongitude(double latitude, double longitude, Pageable pageable);
+
     @Query(value = "SELECT t FROM Toilet t WHERE :onlyConfirmed = false OR :onlyConfirmed = true AND t.confirmed = true")
     Page<Toilet> findAll(@Param("onlyConfirmed") boolean onlyConfirmed, Pageable pageable);
 

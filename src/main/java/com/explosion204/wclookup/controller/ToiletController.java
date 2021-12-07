@@ -8,7 +8,6 @@ import com.explosion204.wclookup.service.pagination.PageContext;
 import com.explosion204.wclookup.service.pagination.PaginationModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,6 +55,18 @@ public class ToiletController {
         ToiletDto toiletDto = toiletService.findById(id, onlyConfirmed);
 
         return new ResponseEntity<>(toiletDto, OK);
+    }
+
+    @GetMapping("/coordinates")
+    public ResponseEntity<PaginationModel<ToiletDto>> getToiletByCoordinates(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer pageSize
+    ) {
+        PageContext pageContext = PageContext.of(page, pageSize);
+        PaginationModel<ToiletDto> toilets = toiletService.find(latitude, longitude, pageContext);
+        return new ResponseEntity<>(toilets, OK);
     }
 
     @PostMapping

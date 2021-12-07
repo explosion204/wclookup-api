@@ -41,6 +41,13 @@ public class ToiletService {
         return PaginationModel.fromPage(dtoPage);
     }
 
+    public PaginationModel<ToiletDto> find(double latitude, double longitude, PageContext pageContext) {
+        PageRequest pageRequest = pageContext.toPageRequest();
+        Page<ToiletDto> dtoPage = toiletRepository.findByLatitudeAndLongitude(latitude, longitude, pageRequest)
+                .map(ToiletDto::fromToilet);
+        return PaginationModel.fromPage(dtoPage);
+    }
+
     public ToiletDto findById(long id, boolean onlyConfirmed) {
         Optional<Toilet> result = onlyConfirmed
                 ? toiletRepository.findByIdConfirmed(id)
