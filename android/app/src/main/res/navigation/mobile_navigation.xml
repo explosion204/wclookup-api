@@ -18,14 +18,32 @@
         tools:layout="@layout/fragment_toilets_in_radius" />
 
     <fragment
-        android:id="@+id/nav_auth"
-        android:name="com.example.wclookup.ui.fragment.AuthFragment"
-        android:label="@string/menu_auth"
-        tools:layout="@layout/fragment_auth" />
+        android:id="@+id/nav_ticket"
+        android:name="com.example.wclookup.ui.fragment.TicketFragment"
+        android:label="@string/menu_ticket"
+        tools:layout="@layout/fragment_ticket" />
 
     <fragment
         android:id="@+id/nav_toilet"
         android:name="com.example.wclookup.ui.fragment.ToiletFragment"
         android:label="@string/menu_toilet"
         tools:layout="@layout/fragment_toilet" />
+
+    <fragment
+        android:id="@+id/nav_review_form"
+        android:name="com.example.wclookup.ui.fragment.ReviewFormFragment"
+        android:label="@string/menu_review"
+        tools:layout="@layout/fragment_review_form" />
+
+    <fragment
+        android:id="@+id/nav_favourites"
+        android:name="com.example.wclookup.ui.fragment.FavouritesFragment"
+        android:label="@string/menu_favourites"
+        tools:layout="@layout/fragment_favourites" />
+
+    <fragment
+        android:id="@+id/nav_auth"
+        android:name="com.example.wclookup.ui.fragment.AuthFragment"
+        android:label="@string/menu_auth"
+        tools:layout="@layout/fragment_auth" />
 </navigation>

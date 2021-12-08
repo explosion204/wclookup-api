@@ -1,43 +1,37 @@
-package com.example.wclookup.ui.viewmodel;
+package com.example.wclookup.ui.viewmodel
 
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wclookup.core.constant.NameConstant
-import com.example.wclookup.core.db.TinyDB
 import com.example.wclookup.core.model.Review
 import com.example.wclookup.core.model.Toilet
 import com.example.wclookup.core.service.AuthService
 import com.example.wclookup.core.service.ReviewService
+import com.example.wclookup.core.service.ToiletService
 import com.example.wclookup.core.service.UserService
 import com.example.wclookup.core.validation.AccessTokenValidator
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ToiletViewModel @Inject constructor(
+class FavouritesViewModel @Inject constructor(
     private val preferences: SharedPreferences,
     private val authService: AuthService,
-    private val reviewService: ReviewService,
-    private val userService: UserService
+    private val toiletService: ToiletService
 ): ViewModel() {
-    lateinit var toilet: Toilet
-    val reviews: MutableLiveData<List<Review>> = MutableLiveData()
-    val nicknames: MutableMap<Long, String> = HashMap()
+    val toilets: MutableLiveData<List<Toilet>> = MutableLiveData()
 
-    fun findReviews(sleep: Boolean = false) {
+    fun findByIds(ids: List<Long>) {
         viewModelScope.launch {
-            if (sleep) {
-                Thread.sleep(500)
-            }
             var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
             accessToken = validateAccessToken(accessToken)
 
-            val result = reviewService.getAll(accessToken, toilet.id)
-            result.forEach {
-                nicknames[it.id] = userService.getById(accessToken, it.userId).nickname
+            val list: MutableList<Toilet> = ArrayList()
+            ids.forEach {
+                list.add(toiletService.getById(accessToken, it))
             }
-            reviews.postValue(result)
+            toilets.postValue(list)
         }
     }
 

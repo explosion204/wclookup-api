@@ -9,15 +9,18 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.wclookup.R
 import com.example.wclookup.core.model.Toilet
 import com.example.wclookup.ui.viewmodel.MapsViewModel
+import com.example.wclookup.ui.viewmodel.ToiletViewModel
 import com.example.wclookup.ui.viewmodel.factory.ViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -37,7 +40,11 @@ import javax.inject.Inject
 class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
+
     private val mapsViewModel: MapsViewModel by activityViewModels {
+        viewModelFactory
+    }
+    private val toiletViewModel: ToiletViewModel by activityViewModels {
         viewModelFactory
     }
 
@@ -45,6 +52,7 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
     private lateinit var googleMap: GoogleMap
     private lateinit var currentPosMarker: Marker
     private var isAdding: Boolean = false
+    private lateinit var toiletButton: FloatingActionButton
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { map ->
@@ -65,9 +73,11 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
         mapsViewModel.toilets.observe(viewLifecycleOwner, { toilets ->
             toilets.forEach {
                 val coordinates = LatLng(it.latitude, it.longitude)
-                googleMap.addMarker(MarkerOptions()
+                val marker = googleMap.addMarker(MarkerOptions()
                     .position(coordinates)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .title(it.address))
+                marker!!.tag = it
             }
         })
     }
@@ -89,11 +99,10 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
 
         view.findViewById<FloatingActionButton>(R.id.fab_location).setOnClickListener {
             fusedLocationClient.lastLocation.addOnSuccessListener {
-                currentPosMarker.remove()
                 mapsViewModel.currentLatitude = it.latitude
                 mapsViewModel.currentLongitude = it.longitude
                 val coordinates = LatLng(it.latitude, it.longitude)
-                googleMap.addMarker(MarkerOptions().position(coordinates).title("My last position"))
+                currentPosMarker = googleMap.addMarker(MarkerOptions().position(coordinates).title("My last position"))!!
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(coordinates))
             }
         }
@@ -106,13 +115,26 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
             isAdding = true
             Toast.makeText(requireContext(), "Tap any point on map to add toilet", Toast.LENGTH_SHORT).show()
         }
+
+        toiletButton = view.findViewById(R.id.fab_toilet)
+        toiletButton.setOnClickListener {
+            findNavController().navigate(R.id.nav_toilet)
+        }
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
+        if (marker.title != "My last position") {
+            toiletButton.visibility = View.VISIBLE
+            marker.title
+            toiletViewModel.toilet = marker.tag as Toilet
+            return true
+        }
+        toiletButton.visibility = View.INVISIBLE
         return false
     }
 
     override fun onMapClick(coordinates: LatLng) {
+        toiletButton.visibility = View.INVISIBLE
         if (isAdding) {
             showAddToiletDialog(coordinates.latitude, coordinates.longitude)
         }
@@ -172,6 +194,13 @@ class MapsFragment : DaggerFragment(), GoogleMap.OnMarkerClickListener, GoogleMa
 
             try {
                 mapsViewModel.radius = radiusString.toDouble()
+                if (mapsViewModel.radius > 10) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Max value is 10km, set to this value",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             } catch (e: NumberFormatException) {
                 Toast.makeText(
                     requireContext(),

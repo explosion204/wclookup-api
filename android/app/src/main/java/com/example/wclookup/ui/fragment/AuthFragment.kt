@@ -54,6 +54,7 @@ class AuthFragment : DaggerFragment() {
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.server_client_id))
+            .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
     }
@@ -67,7 +68,7 @@ class AuthFragment : DaggerFragment() {
                 try {
                     val account = task.getResult(ApiException::class.java)
                     if (account != null) {
-                        authViewModel.authenticate(account.idToken!!)
+                        authViewModel.saveEmail(account.email!!)
                         authViewModel.authenticate(account.idToken!!)
                         requireActivity().supportFragmentManager.beginTransaction()
                             .remove(this)

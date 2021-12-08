@@ -37,5 +37,5 @@ interface WclookupReviewApi {
     suspend fun delete(
         @Header("Access-Token") accessToken: String,
         @Path("id") id: Long
-    ): Void
+    ): Response<Unit>
 }

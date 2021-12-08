@@ -12,6 +12,11 @@ interface WclookupUserApi {
         @Path("id") id: Long
     ): Response<User>
 
+    @GET("/api/users/current")
+    suspend fun getCurrent(
+        @Header("Access-Token") accessToken: String
+    ): Response<User>
+
     @PATCH("/api/users/{id}")
     suspend fun update(
         @Header("Access-Token") accessToken: String,

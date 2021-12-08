@@ -14,6 +14,9 @@
 
     <string name="menu_map">Map</string>
     <string name="menu_toilets">Toilets</string>
-    <string name="menu_auth">Auth</string>
     <string name="menu_toilet">Toilet</string>
+    <string name="menu_ticket">Ticket</string>
+    <string name="menu_review">Review</string>
+    <string name="menu_favourites">Favourites</string>
+    <string name="menu_auth">Authorization</string>
 </resources>

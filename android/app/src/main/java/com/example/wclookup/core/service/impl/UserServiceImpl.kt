@@ -22,6 +22,20 @@ class UserServiceImpl : UserService {
         return gson.fromJson(gson.toJson(apiResponse.body()), typeToken)
     }
 
+    override suspend fun getCurrent(accessToken: String): User {
+        val apiResponse = NetworkService.instance
+            .getUserApi()
+            .getCurrent(accessToken)
+
+        if (!apiResponse.isSuccessful) {
+            throw AccessTokenException()
+        }
+
+        val gson = GsonBuilder().create()
+        val typeToken = object : TypeToken<User>() {}.type
+        return gson.fromJson(gson.toJson(apiResponse.body()), typeToken)
+    }
+
     override suspend fun update(accessToken: String, id: Long, user: User): User {
         val apiResponse = NetworkService.instance
             .getUserApi()

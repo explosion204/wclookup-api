@@ -25,7 +25,6 @@ class ToiletsInRadiusAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val toilet = toilets[position]
         holder.addressView.text = toilet.address
-        holder.scheduleView.text = toilet.schedule
         holder.ratingView.text = toilet.rating.toString()
         holder.itemView.setOnClickListener {
             listener.onItemClick(toilet)
@@ -36,8 +35,6 @@ class ToiletsInRadiusAdapter(
 
     inner class ViewHolder(binding: FragmentToiletInRadiusBinding) : RecyclerView.ViewHolder(binding.root) {
         val addressView: TextView = binding.address
-        val scheduleView: TextView = binding.schedule
         val ratingView: TextView = binding.rating
     }
-
 }

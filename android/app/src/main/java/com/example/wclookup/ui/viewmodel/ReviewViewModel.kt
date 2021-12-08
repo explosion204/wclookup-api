@@ -1,13 +1,11 @@
-package com.example.wclookup.ui.viewmodel;
+package com.example.wclookup.ui.viewmodel
 
 import android.content.SharedPreferences
-import androidx.lifecycle.MutableLiveData
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wclookup.core.constant.NameConstant
-import com.example.wclookup.core.db.TinyDB
 import com.example.wclookup.core.model.Review
-import com.example.wclookup.core.model.Toilet
 import com.example.wclookup.core.service.AuthService
 import com.example.wclookup.core.service.ReviewService
 import com.example.wclookup.core.service.UserService
@@ -15,29 +13,48 @@ import com.example.wclookup.core.validation.AccessTokenValidator
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ToiletViewModel @Inject constructor(
+class ReviewViewModel @Inject constructor(
     private val preferences: SharedPreferences,
-    private val authService: AuthService,
     private val reviewService: ReviewService,
+    private val authService: AuthService,
     private val userService: UserService
 ): ViewModel() {
-    lateinit var toilet: Toilet
-    val reviews: MutableLiveData<List<Review>> = MutableLiveData()
-    val nicknames: MutableMap<Long, String> = HashMap()
+    lateinit var review: Review
+    var userId: Long = 0
 
-    fun findReviews(sleep: Boolean = false) {
+    fun createReview() {
         viewModelScope.launch {
-            if (sleep) {
-                Thread.sleep(500)
-            }
             var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
             accessToken = validateAccessToken(accessToken)
 
-            val result = reviewService.getAll(accessToken, toilet.id)
-            result.forEach {
-                nicknames[it.id] = userService.getById(accessToken, it.userId).nickname
-            }
-            reviews.postValue(result)
+            reviewService.create(accessToken, review)
+        }
+    }
+
+    fun updateReview() {
+        viewModelScope.launch {
+            var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
+            accessToken = validateAccessToken(accessToken)
+
+            reviewService.update(accessToken, review.id, review)
+        }
+    }
+
+    fun deleteReview(id: Long) {
+        viewModelScope.launch {
+            var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
+            accessToken = validateAccessToken(accessToken)
+
+            reviewService.delete(accessToken, id)
+        }
+    }
+
+    fun getCurrentUserId() {
+        viewModelScope.launch {
+            var accessToken = preferences.getString(NameConstant.ACCESS_TOKEN, "")!!
+            accessToken = validateAccessToken(accessToken)
+
+            userId = userService.getCurrent(accessToken).id
         }
     }
 

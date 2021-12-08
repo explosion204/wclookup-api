@@ -11,10 +11,9 @@ import com.google.gson.annotations.SerializedName
 import java.time.Instant
 
 data class Review(
-    @SerializedName(ID) val id: Long,
+    @SerializedName(ID) var id: Long,
     @SerializedName(USER_ID) @Expose val userId: Long,
     @SerializedName(TOILET_ID) @Expose val toiletId: Long,
-    @SerializedName(RATING) @Expose val rating: Double,
+    @SerializedName(RATING) @Expose val rating: Int,
     @SerializedName(TEXT) @Expose val text: String,
-    @SerializedName(CREATION_TIME) @Expose val creationTime: Instant
 )
